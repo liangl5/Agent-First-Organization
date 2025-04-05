@@ -72,8 +72,9 @@ class Loader:
         options.add_argument("--disable-infobars")
         options.add_argument("--remote-debugging-pipe")
         chrome_driver_path = Path(ChromeDriverManager(driver_version=CHROME_DRIVER_VERSION).install())
-        options.binary_location = str(chrome_driver_path.parent.absolute())
-        logger.info(f"chrome binary location: {options.binary_location}")
+        # Locally throwing errors as options.binary_location should be pointing to chrome executable and not the driver executable: https://developer.chrome.com/docs/chromedriver/capabilities
+        # options.binary_location = str(chrome_driver_path.parent.absolute())
+        # logger.info(f"chrome binary location: {options.binary_location}")
         driver = webdriver.Chrome(options=options)
 
         docs: List[CrawledURLObject] = []
