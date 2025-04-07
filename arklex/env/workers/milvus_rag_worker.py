@@ -29,7 +29,7 @@ class MilvusRAGWorker(BaseWorker):
         self.stream_response = stream_response
 
     def choose_tool_generator(self, state: MessageState):
-        if self.stream_response and state["is_stream"]:
+        if self.stream_response and state.is_stream:
             return "stream_tool_generator"
         return "tool_generator"
 
@@ -45,7 +45,7 @@ class MilvusRAGWorker(BaseWorker):
             "retriever", self.choose_tool_generator)
         return workflow
 
-    def execute(self, msg_state: MessageState):
+    def _execute(self, msg_state: MessageState):
         graph = self.action_graph.compile()
         result = graph.invoke(msg_state)
         return result

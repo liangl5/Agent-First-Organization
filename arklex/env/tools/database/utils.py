@@ -136,14 +136,14 @@ class DatabaseActions:
         cursor.close()
         conn.close()
         if len(rows) == 0:
-            msg_state["status"] = StatusEnum.INCOMPLETE.value
-            msg_state["message_flow"] = NO_SHOW_MESSAGE
+            msg_state.status = StatusEnum.INCOMPLETE.value
+            msg_state.message_flow = NO_SHOW_MESSAGE
         else:
             column_names = [column[0] for column in cursor.description]
             results = [dict(zip(column_names, row)) for row in rows]
             results_df = pd.DataFrame(results)
-            msg_state["status"] = StatusEnum.COMPLETE.value
-            msg_state["message_flow"] = "Available shows are:\n" + results_df.to_string(index=False)
+            msg_state.status = StatusEnum.COMPLETE.value
+            msg_state.message_flow = "Available shows are:\n" + results_df.to_string(index=False)
         return msg_state
 
     def book_show(self, msg_state: MessageState) -> MessageState:
@@ -162,14 +162,14 @@ class DatabaseActions:
         logger.info(f"Rows found: {len(rows)}")
         # Check whether info is enough to book a show
         if len(rows) == 0:
-            msg_state["status"] = StatusEnum.INCOMPLETE.value
-            msg_state["message_flow"] = NO_SHOW_MESSAGE
+            msg_state.status = StatusEnum.INCOMPLETE.value
+            msg_state.message_flow = NO_SHOW_MESSAGE
         elif len(rows) > 1:
-            msg_state["status"] = StatusEnum.INCOMPLETE.value
+            msg_state.status = StatusEnum.INCOMPLETE.value
             if self.slot_prompts:
-                msg_state["message_flow"] = self.slot_prompts[0]
+                msg_state.message_flow = self.slot_prompts[0]
             else:
-                msg_state["message_flow"] = MULTIPLE_SHOWS_MESSAGE
+                msg_state.message_flow = MULTIPLE_SHOWS_MESSAGE
         else:
             column_names = [column[0] for column in cursor.description]
             results = dict(zip(column_names, rows[0]))
@@ -182,8 +182,8 @@ class DatabaseActions:
             ''', ("booking_" + str(uuid.uuid4()),  show_id, self.user_id, datetime.now()))
 
             results_df = pd.DataFrame([results])
-            msg_state["status"] = StatusEnum.COMPLETE.value
-            msg_state["message_flow"] = "The booked show is:\n" + results_df.to_string(index=False)
+            msg_state.status = StatusEnum.COMPLETE.value
+            msg_state.message_flow = "The booked show is:\n" + results_df.to_string(index=False)
         cursor.close()
         conn.close()
         return msg_state
@@ -205,13 +205,13 @@ class DatabaseActions:
         cursor.close()
         conn.close()
         if len(rows) == 0:
-            msg_state["message_flow"] = NO_BOOKING_MESSAGE
+            msg_state.message_flow = NO_BOOKING_MESSAGE
         else:
             column_names = [column[0] for column in cursor.description]
             results = [dict(zip(column_names, row)) for row in rows]
             results_df = pd.DataFrame(results)
-            msg_state["message_flow"] = "Booked shows are:\n" + results_df.to_string(index=False)
-        msg_state["status"] = StatusEnum.COMPLETE.value
+            msg_state.message_flow = "Booked shows are:\n" + results_df.to_string(index=False)
+        msg_state.status = StatusEnum.COMPLETE.value
         return msg_state
 
     def cancel_booking(self, msg_state: MessageState) -> MessageState:
@@ -229,14 +229,14 @@ class DatabaseActions:
         cursor.execute(query, (self.user_id,))
         rows = cursor.fetchall()
         if len(rows) == 0:
-            msg_state["status"] = StatusEnum.COMPLETE.value
-            msg_state["message_flow"] = NO_BOOKING_MESSAGE
+            msg_state.status = StatusEnum.COMPLETE.value
+            msg_state.message_flow = NO_BOOKING_MESSAGE
         elif len(rows) > 1:
-            msg_state["status"] = StatusEnum.INCOMPLETE.value
+            msg_state.status = StatusEnum.INCOMPLETE.value
             if self.slot_prompts:
-                msg_state["message_flow"] = self.slot_prompts[0]
+                msg_state.message_flow = self.slot_prompts[0]
             else:
-                msg_state["message_flow"] = MULTIPLE_SHOWS_MESSAGE
+                msg_state.message_flow = MULTIPLE_SHOWS_MESSAGE
         else:
             column_names = [column[0] for column in cursor.description]
             results = [dict(zip(column_names, row)) for row in rows]
@@ -246,8 +246,8 @@ class DatabaseActions:
             ''', (show["id"],))
             # Respond to user the cancellation
             results_df = pd.DataFrame(results)
-            msg_state["message_flow"] = "The cancelled show is:\n" + results_df.to_string(index=False)
-            msg_state["status"] = StatusEnum.COMPLETE.value
+            msg_state.message_flow = "The cancelled show is:\n" + results_df.to_string(index=False)
+            msg_state.status = StatusEnum.COMPLETE.value
         conn.close()
         cursor.commit()
         return msg_state

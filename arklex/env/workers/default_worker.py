@@ -27,14 +27,14 @@ class DefaultWorker(BaseWorker):
         )
 
     def _choose_worker(self, state: MessageState, limit=2):
-        user_message = state['user_message']
-        task = state["orchestrator_message"].attribute.get("task", "")
-        self.available_workers = {id: resource for id, resource in state["metadata"]["worker"].items() if resource["name"] != "DefaultWorker"}
+        user_message = state.user_message
+        task = state.orchestrator_message.attribute.get("task", "")
+        self.available_workers = {id: resource for id, resource in state.metadata["worker"].items() if resource["name"] != "DefaultWorker"}
         self.name2id = {resource["name"]: id for id, resource in self.available_workers.items()}
         workers_info = "\n".join([f"{resource['name']}: {resource['description']}" for _, resource in self.available_workers.items()])
         workers_name = ", ".join(self.name2id.keys())
 
-        prompts = load_prompts(state["bot_config"])
+        prompts = load_prompts(state.bot_config)
         prompt = PromptTemplate.from_template(prompts["choose_worker_prompt"])
         input_prompt = prompt.invoke({"message": user_message.message, "formatted_chat": user_message.history, "task": task, "workers_info": workers_info, "workers_name": workers_name})
         chunked_prompt = chunk_string(input_prompt.text, tokenizer=MODEL["tokenizer"], max_length=MODEL["context"])
@@ -50,7 +50,7 @@ class DefaultWorker(BaseWorker):
         logger.info("Worker chosen failed for the default worker.")
         return ""
     
-    def execute(self, msg_state: MessageState):
+    def _execute(self, msg_state: MessageState):
         worker_id = self._choose_worker(msg_state)
         if worker_id:
             worker = self.available_workers[worker_id]["execute"]()

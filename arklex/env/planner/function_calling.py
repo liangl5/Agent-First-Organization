@@ -56,11 +56,11 @@ class FunctionCallingPlanner:
             return [Action(name=RESPOND_ACTION_NAME, kwargs={"content": message["content"]})]
 
     def plan(self, state: MessageState, msg_history, max_num_steps=3):
-        user_message = state['user_message'].message
-        task = state["orchestrator_message"].attribute.get("task", "")
+        user_message = state.user_message.message
+        task = state.orchestrator_message.attribute.get("task", "")
 
         messages: List[Dict[str, Any]] = [
-            {"role": "system", "content": state['sys_instruct'] + "Your current task is: " + task},
+            {"role": "system", "content": state.sys_instruct + "Your current task is: " + task},
         ]
         messages.extend(msg_history)
 
@@ -141,7 +141,7 @@ class FunctionCallingPlanner:
     def execute(self, msg_state: MessageState, msg_history):
         # TODO: fix the logic for the planner
         # msg_history, action, response = self.plan(msg_state, msg_history)
-        # msg_state['response'] = response
+        # msg_state.response = response
         # return action, msg_state, msg_history
         return None, msg_state, msg_history
 

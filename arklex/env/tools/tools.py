@@ -52,22 +52,6 @@ class Tool:
                 verified=slot.get("verified", False)
             ))
         return format_slots
-    
-    @staticmethod
-    def format_slots(slots):
-        format_slots = []
-        for slot in slots:
-            format_slots.append({
-                "name": slot["name"],
-                "value": slot["value"],
-                "type": slot.get("type", "string"),
-                "enum": slot.get("enum", []),
-                "description": slot.get("description", ""),
-                "prompt": slot.get("prompt", ""),
-                "required": slot.get("required", False),
-                "verified": slot.get("verified", False)
-            })
-        return format_slots
 
     def get_info(self, slots):
         self.properties = {}
@@ -91,7 +75,7 @@ class Tool:
         self.slotfillapi = slotfillapi
 
     def _init_slots(self, state: MessageState):
-        default_slots = state["slots"].get("default_slots", [])
+        default_slots = state.slots.get("default_slots", [])
         logger.info(f'Default slots are: {default_slots}')
         if not default_slots:
             return
@@ -102,7 +86,7 @@ class Tool:
                 if slot.name == default_slot.name and default_slot.value:
                     slot.value = default_slot.value
                     slot.verified = True
-        state["trajectory"].append({
+        state.function_calling_trajectory.append({
             "role": "tool",
             "tool_call_id": str(uuid.uuid4()),
             "name": "default_slots",
@@ -111,7 +95,7 @@ class Tool:
         logger.info(f'Slots after initialization are: {self.slots}')
 
     def _skip_tool(self, state: MessageState):
-        default_slots = state["slots"].get("default_slots", [])
+        default_slots = state.slots.get("default_slots", [])
         assigned_slot = False
         for default_slot in default_slots:
             for output in self.output:
@@ -121,9 +105,9 @@ class Tool:
         if not assigned_slot:
             return False
         if all([output.get("value") for output in self.output if output.get("required", False)]):
-            state["status"] = StatusEnum.COMPLETE.value
+            state.status = StatusEnum.COMPLETE.value
             call_id = str(uuid.uuid4())
-            state["trajectory"].append({
+            state.function_calling_trajectory.append({
                 "role": "tool",
                 "tool_call_id": call_id,
                 "name": self.name,
@@ -134,10 +118,10 @@ class Tool:
         
     def _execute(self, state: MessageState, **fixed_args):
         # if this tool has been called before, then load the previous slots status
-        if state["slots"].get(self.name):
-            self.slots = state["slots"][self.name]
+        if state.slots.get(self.name):
+            self.slots = state.slots[self.name]
         else:
-            state["slots"][self.name] = self.slots
+            state.slots[self.name] = self.slots
         # init slot values saved in default slots
         self._init_slots(state)
         response = "error"
@@ -147,13 +131,13 @@ class Tool:
             response = json.dumps(self.output)
             if self.isResponse:
                 logger.info("Tool output is stored in response instead of message flow")
-                state["response"] = response
+                state.response = response
             else:
-                state["message_flow"] = state["message_flow"] + f"Context from {self.name}: {response}\n\n"
+                state.message_flow = state.message_flow + f"Context from {self.name}: {response}\n\n"
             return state
         max_tries = 3
         while max_tries > 0 and "error" in response:
-            chat_history_str = format_chat_history(state["trajectory"])
+            chat_history_str = format_chat_history(state.function_calling_trajectory)
             slots : list[Slot] = self.slotfillapi.execute(self.slots, chat_history_str)
             logger.info(f'{slots=}')
             if not all([slot.value and slot.verified for slot in slots if slot.required]):
@@ -172,29 +156,30 @@ class Tool:
                         response = slot.prompt
                         break
                 
-                state["status"] = StatusEnum.INCOMPLETE.value
+                state.status = StatusEnum.INCOMPLETE.value
                 
             # if slot.value is not empty for all slots, and all the slots has been verified, then execute the function
             if all([slot.value and slot.verified for slot in slots if slot.required]):
                 logger.info("all slots filled")
-                for slot in slots:
-                    if slot.type in ["list", "dict", "array"]:
-                        if not isinstance(slot.value, list):
-                            try:
-                                # Try to parse as JSON first
-                                slot.value = json.loads(slot.value)
-                            except json.JSONDecodeError:
-                                # If JSON decoding fails, fallback to evaluating Python-like literals
-                                try:
-                                    slot.value = ast.literal_eval(slot.value)
-                                except (ValueError, SyntaxError):
-                                    raise ValueError(f"Unable to parse slot value: {slot.value}")
+                # TODO: Double check whether the following postprocessing is needed
+                # for slot in slots:
+                #     if slot.type in ["list", "dict", "array"]:
+                #         if not isinstance(slot.value, list):
+                #             try:
+                #                 # Try to parse as JSON first
+                #                 slot.value = json.loads(slot.value)
+                #             except json.JSONDecodeError:
+                #                 # If JSON decoding fails, fallback to evaluating Python-like literals
+                #                 try:
+                #                     slot.value = ast.literal_eval(slot.value)
+                #                 except (ValueError, SyntaxError):
+                #                     raise ValueError(f"Unable to parse slot value: {slot.value}")
                 kwargs = {slot.name: slot.value for slot in slots}
                 combined_kwargs = {**kwargs, **fixed_args}
                 response = self.func(**combined_kwargs)
                 logger.info(f"Tool {self.name} response: {response}")
                 call_id = str(uuid.uuid4())
-                state["trajectory"].append({
+                state.function_calling_trajectory.append({
                     'content': None, 
                     'role': 'assistant', 
                     'tool_calls': [
@@ -209,29 +194,29 @@ class Tool:
                     ], 
                     'function_call': None
                 })
-                state["trajectory"].append({
+                state.function_calling_trajectory.append({
                     "role": "tool",
                     "tool_call_id": call_id,
                     "name": self.name,
                     "content": response
                 })
+                state.trajectory[-1][-1].input = slots
+                state.trajectory[-1][-1].output = response
                 if "error" in response:
                     max_tries -= 1
                     continue
-                state["status"] = StatusEnum.COMPLETE.value if self.isComplete(response) else StatusEnum.INCOMPLETE.value
+                state.status = StatusEnum.COMPLETE.value if self.isComplete(response) else StatusEnum.INCOMPLETE.value
 
         if self.isResponse:
             logger.info("Tool output is stored in response instead of message flow")
-            state["response"] = response
+            state.response = response
         else:
-            state["message_flow"] = state["message_flow"] + f"Context from {self.name}: {response}\n\n"
-        state["slots"][self.name] = slots
+            state.message_flow = state.message_flow + f"Context from {self.name}: {response}\n\n"
+        state.slots[self.name] = slots
         return state
 
     def execute(self, state: MessageState, **fixed_args):
         state = self._execute(state, **fixed_args)
-        ## postprocess if any
-        ## Currently, the value of the tool is stored and returned in state["message_flow"]
         return state
     
     def __str__(self):

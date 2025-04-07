@@ -14,9 +14,9 @@ from langchain_openai.chat_models import ChatOpenAI
 from arklex.env.prompts import load_prompts
 from arklex.utils.mysql import mysql_pool
 from arklex.utils.model_config import MODEL
-from arklex.env.prompts import load_prompts
 from arklex.utils.graph_state import MessageState
 from arklex.env.tools.RAG.retrievers.retriever_document import RetrieverDocument, RetrieverDocumentType, RetrieverResult, embed, embed_retriever_document
+from arklex.env.tools.utils import trace
 
 EMBED_DIMENSION = 1536
 MAX_TEXT_LENGTH = 65535
@@ -30,14 +30,14 @@ class RetrieveEngine():
     @staticmethod
     def milvus_retrieve(state: MessageState):
         # get the input message
-        user_message = state['user_message']
+        user_message = state.user_message
 
         # Search for the relevant documents
-        milvus_retriever = MilvusRetrieverExecutor(state["bot_config"])
+        milvus_retriever = MilvusRetrieverExecutor(state.bot_config)
         retrieved_text, retriever_params = milvus_retriever.retrieve(user_message.history)
 
-        state["message_flow"] = retrieved_text
-        state["metadata"]["tool_response"] = retriever_params
+        state.message_flow = retrieved_text
+        state = trace(input=retriever_params, state=state)
         return state
 
 class MilvusRetriever:

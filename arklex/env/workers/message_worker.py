@@ -8,6 +8,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 from arklex.env.workers.worker import BaseWorker, register_worker
 from arklex.env.prompts import load_prompts
+from arklex.env.tools.utils import trace
 from arklex.types import EventType
 from arklex.utils.utils import chunk_string
 from arklex.utils.graph_state import MessageState
@@ -32,72 +33,73 @@ class MessageWorker(BaseWorker):
 
     def generator(self, state: MessageState) -> MessageState:
         # get the input message
-        user_message = state['user_message']
-        orchestrator_message = state['orchestrator_message']
-        message_flow = state.get('response', "") + "\n" + state.get("message_flow", "")
+        user_message = state.user_message
+        orchestrator_message = state.orchestrator_message
+        message_flow = state.response + "\n" + state.message_flow
 
         # get the orchestrator message content
         orch_msg_content = "None" if not orchestrator_message.message else orchestrator_message.message
         orch_msg_attr = orchestrator_message.attribute
         direct_response = orch_msg_attr.get('direct_response', False)
         if direct_response:
-            state["message_flow"] = ""
-            state["response"] = orch_msg_content
+            state.message_flow = ""
+            state.response = orch_msg_content
             return state
         
-        prompts = load_prompts(state["bot_config"])
+        prompts = load_prompts(state.bot_config)
         if message_flow and message_flow != "\n":
             prompt = PromptTemplate.from_template(prompts["message_flow_generator_prompt"])
-            input_prompt = prompt.invoke({"sys_instruct": state["sys_instruct"], "message": orch_msg_content, "formatted_chat": user_message.history, "context": message_flow})
+            input_prompt = prompt.invoke({"sys_instruct": state.sys_instruct, "message": orch_msg_content, "formatted_chat": user_message.history, "context": message_flow})
         else:
             prompt = PromptTemplate.from_template(prompts["message_generator_prompt"])
-            input_prompt = prompt.invoke({"sys_instruct": state["sys_instruct"], "message": orch_msg_content, "formatted_chat": user_message.history})
+            input_prompt = prompt.invoke({"sys_instruct": state.sys_instruct, "message": orch_msg_content, "formatted_chat": user_message.history})
         logger.info(f"Prompt: {input_prompt.text}")
         chunked_prompt = chunk_string(input_prompt.text, tokenizer=MODEL["tokenizer"], max_length=MODEL["context"])
         final_chain = self.llm | StrOutputParser()
         answer = final_chain.invoke(chunked_prompt)
 
-        state["message_flow"] = ""
-        state["response"] = answer
+        state.message_flow = ""
+        state.response = answer
+        state = trace(input=answer, state=state)
         return state
     
     def choose_generator(self, state: MessageState):
-        if state["is_stream"]:
+        if state.is_stream:
             return "stream_generator"
         return "generator"
     
     def stream_generator(self, state: MessageState) -> MessageState:
         # get the input message
-        user_message = state['user_message']
-        orchestrator_message = state['orchestrator_message']
-        message_flow = state.get('response', "") + "\n" + state.get("message_flow", "")
+        user_message = state.user_message
+        orchestrator_message = state.orchestrator_message
+        message_flow = state.response + "\n" + state.message_flow
 
         # get the orchestrator message content
         orch_msg_content = "None" if not orchestrator_message.message else orchestrator_message.message
         orch_msg_attr = orchestrator_message.attribute
         direct_response = orch_msg_attr.get('direct_response', False)
         if direct_response:
-            state["message_flow"] = ""
-            state["response"] = orch_msg_content
+            state.message_flow = ""
+            state.response = orch_msg_content
             return state
         
-        prompts = load_prompts(state["bot_config"])
+        prompts = load_prompts(state.bot_config)
         if message_flow and message_flow != "\n":
             prompt = PromptTemplate.from_template(prompts["message_flow_generator_prompt"])
-            input_prompt = prompt.invoke({"sys_instruct": state["sys_instruct"], "message": orch_msg_content, "formatted_chat": user_message.history, "context": message_flow})
+            input_prompt = prompt.invoke({"sys_instruct": state.sys_instruct, "message": orch_msg_content, "formatted_chat": user_message.history, "context": message_flow})
         else:
             prompt = PromptTemplate.from_template(prompts["message_generator_prompt"])
-            input_prompt = prompt.invoke({"sys_instruct": state["sys_instruct"], "message": orch_msg_content, "formatted_chat": user_message.history})
+            input_prompt = prompt.invoke({"sys_instruct": state.sys_instruct, "message": orch_msg_content, "formatted_chat": user_message.history})
         logger.info(f"Prompt: {input_prompt.text}")
         chunked_prompt = chunk_string(input_prompt.text, tokenizer=MODEL["tokenizer"], max_length=MODEL["context"])
         final_chain = self.llm | StrOutputParser()
         answer = ""
         for chunk in final_chain.stream(chunked_prompt):
             answer += chunk
-            state["message_queue"].put({"event": EventType.CHUNK.value, "message_chunk": chunk})
+            state.message_queue.put({"event": EventType.CHUNK.value, "message_chunk": chunk})
 
-        state["message_flow"] = ""
-        state["response"] = answer
+        state.message_flow = ""
+        state.response = answer
         return state
 
     def _create_action_graph(self):
@@ -110,7 +112,7 @@ class MessageWorker(BaseWorker):
         workflow.add_conditional_edges(START, self.choose_generator)
         return workflow
 
-    def execute(self, msg_state: MessageState):
+    def _execute(self, msg_state: MessageState):
         graph = self.action_graph.compile()
         result = graph.invoke(msg_state)
         return result

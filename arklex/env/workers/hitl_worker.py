@@ -49,7 +49,7 @@ class HITLWorker(BaseWorker):
         if need_hitl:
             return True, message_literal
         
-        need_hitl, message_slot = self.verify_slots(state['slots'])
+        need_hitl, message_slot = self.verify_slots(state.slots)
         if need_hitl:
             return True, message_slot
         
@@ -69,8 +69,8 @@ class HITLWorker(BaseWorker):
         
         # arklex pseudocode
         # chat_history = await server_chat() # BACKEND CHATS WITH USER HERE'''
-        # state['messageFlow'] = to_message_flow(chat_history)
-        # messageFlow['result'] = chat_history[-1]
+        # state.messageFlow = to_message_flow(chat_history)
+        # state.messageFlow['result'] = chat_history[-1]
         return state
     
     def multiple_choice(self, state: MessageState) -> MessageState:
@@ -84,8 +84,8 @@ class HITLWorker(BaseWorker):
         match self.mode:
             case "chat":
                 chat_result = self.chat(state)
-                state['user_message'].history += ('\n' + chat_result)
-                state['user_message'].message = chat_result.split(f'{self.name}: ')[-1].split(':')[0]
+                state.user_message.history += ('\n' + chat_result)
+                state.user_message.message = chat_result.split(f'{self.name}: ')[-1].split(':')[0]
                 result = "Live Chat Completed"
 
             case "mc":
@@ -104,7 +104,7 @@ class HITLWorker(BaseWorker):
             case _:
                 return self.error(state)
                 
-        state['response'] = result
+        state.response = result
         return state
         
     def fallback(self, state: MessageState) -> MessageState:
@@ -116,8 +116,8 @@ class HITLWorker(BaseWorker):
         Returns:
             : 
         """
-        state['message_flow'] = "The user don't need human help"
-        state['status'] = StatusEnum.COMPLETE.value
+        state.message_flow = "The user don't need human help"
+        state.status = StatusEnum.COMPLETE.value
         return state
             
     def _create_action_graph(self):
@@ -128,7 +128,7 @@ class HITLWorker(BaseWorker):
         workflow.add_edge(START, "hitl")
         return workflow
         
-    def execute(self, state: MessageState) -> MessageState:
+    def _execute(self, state: MessageState) -> MessageState:
         if not self.verify(state):
             return self.error(state)
         
@@ -228,22 +228,22 @@ class HITLWorkerChatFlag(HITLWorker):
 
         return True, message
     
-    def execute(self, state: MessageState) -> MessageState:
-        if not state['metadata'].get('hitl'):
+    def _execute(self, state: MessageState) -> MessageState:
+        if not state.metadata.hitl:
             need_hitl, message = self.verify(state)
             if not need_hitl:
                 return self.fallback(state)
             
-            state["message_flow"] = message
-            state['metadata']['hitl'] = 'live'
-            state['status'] = StatusEnum.STAY.value
+            state.message_flow = message
+            state.metadata.hitl = 'live'
+            state.status = StatusEnum.STAY.value
         
         else:
-            state['message_flow'] = 'Live chat completed'
-            state['metadata']['hitl'] = None
-            state['status'] = StatusEnum.COMPLETE.value
+            state.message_flow = 'Live chat completed'
+            state.metadata.hitl = None
+            state.status = StatusEnum.COMPLETE.value
         
-        logger.info(state['message_flow'])
+        logger.info(state.message_flow)
         return state
     
 @register_worker
@@ -274,35 +274,35 @@ class HITLWorkerMCFlag(HITLWorker):
     def verify_literal(self, message: str) -> bool:
         return "buy" in message
     
-    def execute(self, state: MessageState) -> MessageState:
-        if not state['metadata'].get('hitl'):
+    def _execute(self, state: MessageState) -> MessageState:
+        if not state.metadata.hitl:
             need_hitl, _ = self.verify(state)
             if not need_hitl:
                 return self.fallback(state)
             
-            state['response'] = '[[sending confirmation : this should not show up for user]]'
-            state['metadata']['hitl'] = 'mc'
-            state['metadata]']['attempts'] = self.params.get("max_retries", 3)
-            state['status'] = StatusEnum.STAY.value
+            state.response = '[[sending confirmation : this should not show up for user]]'
+            state.metadata.hitl = 'mc'
+            state.metadata.attempts = self.params.get("max_retries", 3)
+            state.status = StatusEnum.STAY.value
         
         else:
             result = self.params["choices"].get(state.user_message.message) # not actually user message but system confirmation
             
             if result:
-                state['response'] = result
-                state['metadata']['hitl'] = None
-                state['status'] = StatusEnum.COMPLETE.value
+                state.response = result
+                state.metadata.hitl = None
+                state.status = StatusEnum.COMPLETE.value
                 return state
             
-            state['metadata]']['attempts'] -= 1
-            if state['metadata]']['attempts'] <= 0:
-                state['response'] = self.params['default']
-                state['metadata']['hitl'] = None
-                state['status'] = StatusEnum.INCOMPLETE.value
+            state.metadata.attempts -= 1
+            if state.metadata.attempts <= 0:
+                state.response = self.params['default']
+                state.metadata.hitl = None
+                state.status = StatusEnum.INCOMPLETE.value
                 return state
                     
-            state['response'] = '[[sending confirmation : this should not show up for user]]'
-            state['metadata']['hitl'] = 'mc'
-            state['status'] = StatusEnum.STAY.value
+            state.response = '[[sending confirmation : this should not show up for user]]'
+            state.metadata.hitl = 'mc'
+            state.status = StatusEnum.STAY.value
             
         return state

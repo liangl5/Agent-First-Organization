@@ -30,9 +30,9 @@ class RagMsgWorker(BaseWorker):
         self.llm = ChatOpenAI(model=MODEL["model_type_or_path"], timeout=30000)
 
     def _choose_retriever(self, state: MessageState):
-        prompts = load_prompts(state["bot_config"])
+        prompts = load_prompts(state.bot_config)
         prompt = PromptTemplate.from_template(prompts["retrieval_needed_prompt"])
-        input_prompt = prompt.invoke({"formatted_chat": state["user_message"].history})
+        input_prompt = prompt.invoke({"formatted_chat": state.user_message.history})
         logger.info(f"Prompt for choosing the retriever in RagMsgWorker: {input_prompt.text}")
         chunked_prompt = chunk_string(input_prompt.text, tokenizer=MODEL["tokenizer"], max_length=MODEL["context"])
         final_chain = self.llm | StrOutputParser()
@@ -54,7 +54,7 @@ class RagMsgWorker(BaseWorker):
         workflow.add_edge("retriever", "message_worker")
         return workflow
 
-    def execute(self, msg_state: MessageState):
+    def _execute(self, msg_state: MessageState):
         graph = self.action_graph.compile()
         result = graph.invoke(msg_state)
         return result

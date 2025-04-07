@@ -19,5 +19,11 @@ class BaseWorker(ABC):
         return f"{self.__class__.__name__}"
     
     @abstractmethod
-    def execute(self, msg_state: MessageState):
+    def _execute(self, msg_state: MessageState):
         pass
+
+    def execute(self, msg_state: MessageState):
+        response_return = self._execute(msg_state)
+        response_state = MessageState.model_validate(response_return)
+        response_state.trajectory[-1][-1].output = response_state.response if response_state.response else response_state.message_flow
+        return response_state

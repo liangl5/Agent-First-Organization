@@ -48,11 +48,11 @@ class DataBaseWorker(BaseWorker):
         return self.DBActions.cancel_booking(state)
 
     def verify_action(self, msg_state: MessageState):
-        user_intent = msg_state["orchestrator_message"].attribute.get("task", "")
+        user_intent = msg_state.orchestrator_message.attribute.get("task", "")
         actions_info = "\n".join([f"{name}: {description}" for name, description in self.actions.items()])
         actions_name = ", ".join(self.actions.keys())
 
-        prompts = load_prompts(msg_state["bot_config"])
+        prompts = load_prompts(msg_state.bot_config)
         prompt = PromptTemplate.from_template(prompts["database_action_prompt"])
         input_prompt = prompt.invoke({"user_intent": user_intent, "actions_info": actions_info, "actions_name": actions_name})
         chunked_prompt = chunk_string(input_prompt.text, tokenizer=MODEL["tokenizer"], max_length=MODEL["context"])
@@ -87,9 +87,9 @@ class DataBaseWorker(BaseWorker):
         workflow.add_edge("CancelBooking", "tool_generator")
         return workflow
 
-    def execute(self, msg_state: MessageState):
+    def _execute(self, msg_state: MessageState):
         self.DBActions.log_in()
-        msg_state["slots"] = self.DBActions.init_slots(msg_state["slots"], msg_state["bot_config"])
+        msg_state.slots = self.DBActions.init_slots(msg_state.slots, msg_state.bot_config)
         graph = self.action_graph.compile()
         result = graph.invoke(msg_state)
         return result

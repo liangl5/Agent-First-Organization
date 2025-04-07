@@ -35,13 +35,13 @@ class SearchEngine():
         return search_text
 
     def search(self, state: MessageState):
-        prompts = load_prompts(state["bot_config"])
+        prompts = load_prompts(state.bot_config)
         contextualize_q_prompt = PromptTemplate.from_template(
             prompts["retrieve_contextualize_q_prompt"]
         )
         ret_input_chain = contextualize_q_prompt | self.llm | StrOutputParser()
-        ret_input = ret_input_chain.invoke({"chat_history": state["user_message"].history})
+        ret_input = ret_input_chain.invoke({"chat_history": state.user_message.history})
         logger.info(f"Reformulated input for search engine: {ret_input}")
         search_results = self.search_tool.invoke({"query": ret_input})
-        state["message_flow"] = self.process_search_result(search_results)
+        state.message_flow = self.process_search_result(search_results)
         return state

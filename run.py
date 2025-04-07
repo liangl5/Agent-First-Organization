@@ -51,7 +51,7 @@ def get_api_bot_response(args, history, user_text, parameters, env):
     orchestrator = AgentOrg(config=os.path.join(args.input_dir, "taskgraph.json"), env=env)
     result = orchestrator.get_response(data)
 
-    return result['answer'], result['parameters'], result['human-in-the-loop']
+    return result['answer'], result['parameters'], result['human_in_the_loop']
 
 
 def start_apis():
