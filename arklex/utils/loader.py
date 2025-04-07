@@ -25,7 +25,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-CHROME_DRIVER_VERSION = "125.0.6422.7"
+# CHROME_DRIVER_VERSION = "125.0.6422.7"
 
 class URLObject:
     def __init__(self, id: str, url: str):
@@ -71,7 +71,12 @@ class Loader:
         options.add_argument("--disable-extensions")
         options.add_argument("--disable-infobars")
         options.add_argument("--remote-debugging-pipe")
-        chrome_driver_path = Path(ChromeDriverManager(driver_version=CHROME_DRIVER_VERSION).install())
+
+        # Specifying chrome driver version does not support newest chrome versions
+        # ex. running this code with no specified driver version allowed me to download the correct 135 version for my 135 chrome version, however still had to go into my downloads and remove the 125 version
+        chrome_driver_path = Path(ChromeDriverManager().install())
+        #chrome_driver_path = Path(ChromeDriverManager(driver_version=CHROME_DRIVER_VERSION).install())
+
         # Locally throwing errors as options.binary_location should be pointing to chrome executable and not the driver executable: 
         # sources: https://developer.chrome.com/docs/chromedriver/capabilities & https://github.com/SeleniumHQ/selenium/blob/trunk/py/selenium/webdriver/chromium/options.py
         # options.binary_location = str(chrome_driver_path.parent.absolute())
