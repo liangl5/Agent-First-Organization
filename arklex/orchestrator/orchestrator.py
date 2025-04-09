@@ -187,11 +187,15 @@ class AgentOrg:
             node_info, params = taskgraph_chain.invoke(taskgraph_inputs)
             taskgraph_inputs["allow_global_intent_switch"] = False
             params.metadata.timing.taskgraph = time.time() - taskgraph_start_time
+
+            # BUG: during local tests I hit an infinite loop here due to continual skipping of the same node, need to look into this more
             # Check if current node can be skipped
-            can_skip = self.check_skip_node(node_info, params)
-            if can_skip:
-                params = self.post_process_node(node_info, params, {"is_skipped": True})
-                continue
+            # can_skip = self.check_skip_node(node_info, params)
+            # if can_skip:
+            #     print(f"The current node info is : {node_info}")
+            #     params = self.post_process_node(node_info, params, {"is_skipped": True})
+            #     continue
+            
             logger.info(f"The current node info is : {node_info}")
             # Check current node attributes
             if node_info.resource_id == "planner":

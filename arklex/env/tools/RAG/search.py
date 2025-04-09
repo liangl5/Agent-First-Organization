@@ -29,7 +29,9 @@ class SearchEngine():
 
     def process_search_result(self, search_results):
         search_text = ""
+        print(search_results)
         for res in search_results:
+            # BUG: some local ran into issue here, may need error handling in case search results are not properly found
             search_text += f"Source: {res['url']} \n"
             search_text += f"Content: {res['content']} \n\n"
         return search_text
