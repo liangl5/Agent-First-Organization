@@ -2,43 +2,66 @@
 
 ## Supported Language Models
 ### Providers
-**1\. OpenAI** (Default)
-- Models: `gpt-4o` (default), `gpt-4o-mini`
+#### OpenAI (Default)
+- Models: `gpt-4o` (default), `gpt-4o-mini`, `gpt-4.5-preview`
 
-**2\. Google Gemini**
+####  Google Gemini
 - Models: ` gemini-1.5-flash`, `gemini-2.0-flash`, `gemini-2.0-flash-lite`
 
 - **NOTE:** Tool calling is only supported with `gemini-2.0-flash`
 
-**3\. Anthropic**
-- Models: `claude-3-5-haiku-20241022`, `claude-3-haiku-20240307`
+####  Anthropic
+- Models: `claude-3-5-haiku-20241022`, `claude-3-haiku-20240307`, `claude-3-7-sonnet-20250219`
 
-**3\. Hugging Face**
+####  Hugging Face
 - Models: `microsoft/Phi-3-mini-4k-instruct`
 - **NOTE:** Tool calling is NOT supported for Hugging Face
 
-## Taskgraph 
-- **Note:** Taskgraph construction with different models isn't supported at the time, only OpenAI can be used. Feature is planned to be implemented in the future.
+## Taskgraph Generation
+### OpenAI (Default)
+- Add your `OPEN_API_KEY` to the `.env` file
+- Example usage:
+    ```
+    python create.py --config ./examples/customer_service_config.json --output-dir ./examples/customer_service --model gpt-4o-mini --llm-provider openai
+    ```
+
+### Google Gemini
+- Add your `GOOGLE_API_KEY` and `GEMINI_API_KEY` to the `.env` file
+  - Note: Both API keys should be the same
+- Example usage:
+  ```
+  python create.py --config ./examples/customer_service_config.json --output-dir ./examples/customer_service --model gemini-2.0-flash --llm-provider gemini
+    ```
+
+
+### Anthropic
+- Add your `ANTHROPIC_API_KEY` to the `.env` file
+- Example usage:
+  ```
+  python create.py --config ./examples/customer_service_config.json --output-dir ./examples/customer_service --model claude-3-5-haiku-20241022 --llm-provider anthropic
+    ```
+
+### Hugging Face
+- Taskgraph generation is not supported for Hugging Face but will be implemented in the future.
 
 ## Running the Bot
 
-### OpenAI
-- Add your `OPEN_API_KEY` to the `.env` file
+### OpenAI(Default)
+- Ensure your `OPEN_API_KEY` is in the `.env` file
 - Example usage:
     ```
     python run.py --input-dir ./examples/customer_service --model gpt-4o-mini --llm-provider openai
     ```
     
 ### Google Gemini
-- Add your `GOOGLE_API_KEY`  and `GEMINI_API_KEY` to the `.env` file
-    - Note: Both API keys should be the same
+- Ensure your `GOOGLE_API_KEY` and `GEMINI_API_KEY` are in the `.env` file
 - Example usage:
      ```
     python run.py --input-dir ./examples/customer_service --model gemini-2.0-flash-lite --llm-provider gemini
     ```
 
 ### Anthropic
-- Add your `ANTHROPIC_API_KEY` to the `.env` file
+- Ensure your `ANTHROPIC_API_KEY` is in the `.env` file
 - Example usage:
     ```
     python run.py --input-dir ./examples/customer_service --model claude-3-5-haiku-20241022 --llm-provider anthropic

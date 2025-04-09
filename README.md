@@ -61,7 +61,13 @@ python create.py --config ./examples/customer_service_config.json --output-dir .
 * Fields:
   * `--config`: The path to the config file
   * `--output-dir`: The directory to save the generated files
-  * `--model`: The openai model type used to generate the taskgraph. The default is `gpt-4o`. You could change it to other models like `gpt-4o-mini`.
+  * `--llm_provider`: The LLM provider you wish to use. 
+    - Options: `openai` (default), `gemini`, `anthropic`
+  *  `--model`: The model type used to generate the taskgraph. The default is `gpt-4o`. 
+      - You can change this to other models like:
+        - `gpt-4o-mini`
+        - `gemini-2.0-flash`
+        - `claude-3-5-haiku-20241022`
 
 * It will first generate a task plan based on the config file and you could modify it in an interactive way from the command line. Made the necessary changes and press `s` to save the task plan under `output-dir` folder and continue the task graph generation process.
 * Then it will generate the task graph based on the task plan and save it under `output-dir` folder as well.
@@ -77,11 +83,11 @@ python run.py --input-dir ./examples/customer_service
   * `--input-dir`: The directory that contains the generated files
   * `--llm_provider`: The LLM provider you wish to use. 
     - Options: `openai` (default), `gemini`, `anthropic`
-  * `--model`: The model type used to generate bot response. Default is `gpt-4o`. 
+  * `--model`: The model type used to generate bot response. The default is `gpt-4o`. 
     - You can change this to other models like:
       - `gpt-4o-mini`
-      - `gemini-2.0-flash-exp`
-      - `claude-3-haiku-20240307`
+      - `gemini-2.0-flash`
+      - `claude-3-5-haiku-20241022`
   
 
 * It will first automatically start the nluapi and slotapi services through `start_apis()` function. By default, this will start the `NLUModelAPI ` and `SlotFillModelAPI` services defined under `./arklex/orchestrator/NLU/api.py` file. You could customize the function based on the nlu and slot models you trained.

@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
-from arklex.utils.graph_state import MessageState
+from arklex.utils.graph_state import MessageState, StatusEnum
+import logging
+import traceback
 
+logger = logging.getLogger(__name__)
 
 def register_worker(cls):
     """Decorator to register a worker."""
@@ -23,7 +26,13 @@ class BaseWorker(ABC):
         pass
 
     def execute(self, msg_state: MessageState):
-        response_return = self._execute(msg_state)
-        response_state = MessageState.model_validate(response_return)
-        response_state.trajectory[-1][-1].output = response_state.response if response_state.response else response_state.message_flow
+        try:
+            response_return = self._execute(msg_state)
+            response_state = MessageState.model_validate(response_return)
+            response_state.trajectory[-1][-1].output = response_state.response if response_state.response else response_state.message_flow
+            if response_state.status == StatusEnum.INCOMPLETE:
+                response_state.status = StatusEnum.COMPLETE
+        except Exception as e:
+            logger.error(traceback.format_exc())
+            response_state.status = StatusEnum.INCOMPLETE
         return response_state

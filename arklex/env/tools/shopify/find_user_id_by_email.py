@@ -1,11 +1,13 @@
 from typing import Any, Dict
 import json
-
+import inspect
 import shopify
 
 from arklex.env.tools.tools import register_tool
 from arklex.env.tools.shopify.utils import authorify_admin
 from arklex.env.tools.shopify.utils_slots import ShopifyFindUserByEmailSlots, ShopifyOutputs
+from arklex.exceptions import ToolExecutionError
+from arklex.env.tools.shopify._exception_prompt import ShopifyExceptionPrompt
 
 description = "Find user id by email. If the user is not found, the function will return an error message."
 slots = ShopifyFindUserByEmailSlots.get_all_slots()
@@ -13,23 +15,16 @@ outputs = [
     ShopifyOutputs.USER_ID
 ]
 
-USER_NOT_FOUND_ERROR = "error: user not found"
-MULTIPLE_USERS_SAME_EMAIL_ERROR = "error: there are multiple users with the same email"
-errors = [
-    USER_NOT_FOUND_ERROR,
-    MULTIPLE_USERS_SAME_EMAIL_ERROR
-]
 
-@register_tool(description, slots, outputs, lambda x: x not in errors)
+@register_tool(description, slots, outputs)
 def find_user_id_by_email(user_email: str, **kwargs) -> str:
+    func_name = inspect.currentframe().f_code.co_name
     auth = authorify_admin(kwargs)
     if auth["error"]:
         return auth["error"]
     
-    user_id = ""
-    
     try:
-        with shopify.Session.temp(**auth["value"]):
+        with shopify.Session.temp(**auth):
             response = shopify.GraphQL().execute(f"""
                 {{
                     customers (first: 10, query: "email:{user_email}") {{
@@ -46,6 +41,6 @@ def find_user_id_by_email(user_email: str, **kwargs) -> str:
             user_id = nodes[0]["node"]["id"]
             return user_id
         else:
-            return MULTIPLE_USERS_SAME_EMAIL_ERROR
+            raise ToolExecutionError(func_name, ShopifyExceptionPrompt.MULTIPLE_USERS_SAME_EMAIL_ERROR_PROMPT)
     except Exception as e:
-        return USER_NOT_FOUND_ERROR
+        raise ToolExecutionError(func_name, ShopifyExceptionPrompt.USER_NOT_FOUND_ERROR_PROMPT)

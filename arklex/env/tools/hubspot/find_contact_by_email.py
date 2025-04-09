@@ -1,28 +1,28 @@
 from datetime import datetime, timezone
-
+import inspect
 import hubspot
 from hubspot.crm.objects.emails import PublicObjectSearchRequest, ApiException
 from hubspot.crm.objects.communications.models import SimplePublicObjectInputForCreate
 from hubspot.crm.associations.v4 import AssociationSpec
 
 from arklex.env.tools.tools import register_tool, logger
-from arklex.env.tools.hubspot.utils import HUBSPOT_AUTH_ERROR
-
-
+from arklex.env.tools.hubspot.utils import authenticate_hubspot
+from arklex.exceptions import ToolExecutionError
+from arklex.env.tools.hubspot._exception_prompt import HubspotExceptionPrompt
 description = "Find the contacts record by email. If the record is found, the lastmodifieddate of the contact will be updated. If the correspodning record is not found, the function will return an error message."
 
 
 slots = [
     {
         "name": "email",
-        "type": "string",
+        "type": "str",
         "description": "The email of the user, such as 'something@example.com'.",
         "prompt": "Thanks for your interest in our products! Could you please provide your email or phone number?",
         "required": True,
     },
     {
         "name": "chat",
-        "type": "string",
+        "type": "str",
         "description": "This occurs when user communicates with the chatbot",
         "prompt": "",
         "required": True,
@@ -31,24 +31,16 @@ slots = [
 outputs = [
     {
         "name": "contact_information",
-        "type": "string",
+        "type": "str",
         "description": "The basic contact information for the existing customer (e.g. id, first_name, last_name, etc.)",
     }
 ]
 
-USER_NOT_FOUND_ERROR = "error: user not found (not an existing customer)"
-errors = [
-    HUBSPOT_AUTH_ERROR,
-    USER_NOT_FOUND_ERROR
-]
 
-@register_tool(description, slots, outputs, lambda x: x not in errors)
+@register_tool(description, slots, outputs)
 def find_contact_by_email(email: str, chat: str, **kwargs) -> str:
-
-    access_token = kwargs.get('access_token')
-
-    if not access_token:
-        return HUBSPOT_AUTH_ERROR
+    func_name = inspect.currentframe().f_code.co_name
+    access_token = authenticate_hubspot(kwargs)
 
     api_client = hubspot.Client.create(access_token=access_token)
     public_object_search_request = PublicObjectSearchRequest(
@@ -110,10 +102,10 @@ def find_contact_by_email(email: str, chat: str, **kwargs) -> str:
                 logger.info("Exception when calling basic_api: %s\n" % e)
             return str(contact_info_properties)
         else:
-            return USER_NOT_FOUND_ERROR
+            raise ToolExecutionError(func_name, HubspotExceptionPrompt.USER_NOT_FOUND_PROMPT)
     except ApiException as e:
         logger.info("Exception when calling search_api: %s\n" % e)
-        return USER_NOT_FOUND_ERROR
+        raise ToolExecutionError(func_name, HubspotExceptionPrompt.USER_NOT_FOUND_PROMPT)
 
 
 

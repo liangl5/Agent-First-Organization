@@ -1,26 +1,28 @@
 from datetime import datetime
+import inspect
 
 import hubspot
 import parsedatetime
 from hubspot.crm.objects.meetings import ApiException
 
 from arklex.env.tools.tools import register_tool, logger
-from arklex.env.tools.hubspot.utils import HUBSPOT_AUTH_ERROR
-
+from arklex.env.tools.hubspot.utils import authenticate_hubspot
+from arklex.exceptions import ToolExecutionError
+from arklex.env.tools.hubspot._exception_prompt import HubspotExceptionPrompt
 
 description = "Give the customer that the unavailable time of the specific representative and the representative's related meeting link information."
 
 slots = [
     {
         "name": "owner_id",
-        "type": "string",
+        "type": "str",
         "description": "The owner id of the owner.'",
         "prompt": "",
         "required": True,
     },
     {
         "name": "time_zone",
-        "type": "string",
+        "type": "str",
         "enum": ["America/New_York", "America/Los_Angeles", "Asia/Tokyo", "Europe/London"],
         "description": "The timezone of the user. For example, 'America/New_York'. If you are not sure, just ask the user to confirm.",
         "prompt": "Could you please provide your timezone or where are you now?",
@@ -28,7 +30,7 @@ slots = [
     },
     {
         "name": "meeting_date",
-        "type": "string",
+        "type": "str",
         "description": "The exact date the customer want to take meeting with the representative. e.g. today, Next Monday, May 1st.",
         "prompt": "Could you please give me the date of the meeting?",
         "required": True,
@@ -42,20 +44,11 @@ outputs = [
     }
 ]
 
-MEETING_LINK_UNFOUND_ERROR = "error: the representative does not have a meeting link."
 
-errors = [
-    HUBSPOT_AUTH_ERROR,
-    MEETING_LINK_UNFOUND_ERROR
-]
-
-
-@register_tool(description, slots, outputs, lambda x: x not in errors)
+@register_tool(description, slots, outputs)
 def check_available(owner_id: str, time_zone: str, meeting_date: str, **kwargs) -> str:
-    access_token = kwargs.get('access_token')
-
-    if not access_token:
-        return HUBSPOT_AUTH_ERROR
+    func_name = inspect.currentframe().f_code.co_name
+    access_token = authenticate_hubspot(kwargs)
     api_client = hubspot.Client.create(access_token=access_token)
     meeting_info = {
         'busy_time_slots': [],
@@ -77,7 +70,7 @@ def check_available(owner_id: str, time_zone: str, meeting_date: str, **kwargs) 
         meeting_link_response = meeting_link_response.json()
 
         if meeting_link_response.get('total') == 0:
-            return MEETING_LINK_UNFOUND_ERROR
+            raise ToolExecutionError(func_name, HubspotExceptionPrompt.MEETING_LINK_UNFOUND_PROMPT)
         else:
             meeting_links = meeting_link_response['results'][0]
         meeting_slug = meeting_links['slug']
@@ -116,10 +109,10 @@ def check_available(owner_id: str, time_zone: str, meeting_date: str, **kwargs) 
             return str(meeting_info)
         except ApiException as e:
             logger.info("Exception when extracting booking information of someone: %s\n" % e)
-            return MEETING_LINK_UNFOUND_ERROR
+            raise ToolExecutionError(func_name, HubspotExceptionPrompt.MEETING_LINK_UNFOUND_PROMPT)
     except ApiException as e:
         logger.info("Exception when extracting meeting scheduler links: %s\n" % e)
-        return MEETING_LINK_UNFOUND_ERROR
+        raise ToolExecutionError(func_name, HubspotExceptionPrompt.MEETING_LINK_UNFOUND_PROMPT)
 
 
 

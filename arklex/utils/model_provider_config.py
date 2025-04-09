@@ -31,7 +31,7 @@ PROVIDER_EMBEDDINGS = {
     "huggingface": HuggingFaceEmbeddings
 }
 PROVIDER_EMBEDDING_MODELS = {
-    "anthropic": "sentence-transformers/all-mpnet-base-v2",
+    "anthropic": "sentence-transformers/sentence-t5-base",
     "gemini": "models/embedding-001",
     "openai": "text-embedding-ada-002",
     "huggingface": "sentence-transformers/all-mpnet-base-v2",

@@ -11,7 +11,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 from arklex.utils.utils import chunk_string
 from arklex.utils.model_config import MODEL
-from arklex.utils.graph_state import Slot, SlotDetail, Slots, MessageState
+from arklex.utils.graph_state import Slot, SlotDetail, MessageState
 from arklex.env.prompts import load_prompts
 from arklex.utils.graph_state import StatusEnum
 
@@ -136,13 +136,13 @@ class DatabaseActions:
         cursor.close()
         conn.close()
         if len(rows) == 0:
-            msg_state.status = StatusEnum.INCOMPLETE.value
+            msg_state.status = StatusEnum.INCOMPLETE
             msg_state.message_flow = NO_SHOW_MESSAGE
         else:
             column_names = [column[0] for column in cursor.description]
             results = [dict(zip(column_names, row)) for row in rows]
             results_df = pd.DataFrame(results)
-            msg_state.status = StatusEnum.COMPLETE.value
+            msg_state.status = StatusEnum.COMPLETE
             msg_state.message_flow = "Available shows are:\n" + results_df.to_string(index=False)
         return msg_state
 
@@ -162,10 +162,10 @@ class DatabaseActions:
         logger.info(f"Rows found: {len(rows)}")
         # Check whether info is enough to book a show
         if len(rows) == 0:
-            msg_state.status = StatusEnum.INCOMPLETE.value
+            msg_state.status = StatusEnum.INCOMPLETE
             msg_state.message_flow = NO_SHOW_MESSAGE
         elif len(rows) > 1:
-            msg_state.status = StatusEnum.INCOMPLETE.value
+            msg_state.status = StatusEnum.INCOMPLETE
             if self.slot_prompts:
                 msg_state.message_flow = self.slot_prompts[0]
             else:
@@ -182,7 +182,7 @@ class DatabaseActions:
             ''', ("booking_" + str(uuid.uuid4()),  show_id, self.user_id, datetime.now()))
 
             results_df = pd.DataFrame([results])
-            msg_state.status = StatusEnum.COMPLETE.value
+            msg_state.status = StatusEnum.COMPLETE
             msg_state.message_flow = "The booked show is:\n" + results_df.to_string(index=False)
         cursor.close()
         conn.close()
@@ -211,7 +211,7 @@ class DatabaseActions:
             results = [dict(zip(column_names, row)) for row in rows]
             results_df = pd.DataFrame(results)
             msg_state.message_flow = "Booked shows are:\n" + results_df.to_string(index=False)
-        msg_state.status = StatusEnum.COMPLETE.value
+        msg_state.status = StatusEnum.COMPLETE
         return msg_state
 
     def cancel_booking(self, msg_state: MessageState) -> MessageState:
@@ -229,10 +229,10 @@ class DatabaseActions:
         cursor.execute(query, (self.user_id,))
         rows = cursor.fetchall()
         if len(rows) == 0:
-            msg_state.status = StatusEnum.COMPLETE.value
+            msg_state.status = StatusEnum.COMPLETE
             msg_state.message_flow = NO_BOOKING_MESSAGE
         elif len(rows) > 1:
-            msg_state.status = StatusEnum.INCOMPLETE.value
+            msg_state.status = StatusEnum.INCOMPLETE
             if self.slot_prompts:
                 msg_state.message_flow = self.slot_prompts[0]
             else:
@@ -247,7 +247,7 @@ class DatabaseActions:
             # Respond to user the cancellation
             results_df = pd.DataFrame(results)
             msg_state.message_flow = "The cancelled show is:\n" + results_df.to_string(index=False)
-            msg_state.status = StatusEnum.COMPLETE.value
+            msg_state.status = StatusEnum.COMPLETE
         conn.close()
         cursor.commit()
         return msg_state

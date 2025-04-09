@@ -14,8 +14,9 @@ from arklex.env.tools.tools import register_tool
 from arklex.utils.model_provider_config import PROVIDER_MAP
 from arklex.utils.model_config import MODEL
 from langchain_openai import ChatOpenAI
-
-
+from arklex.exceptions import ToolExecutionError
+from arklex.env.tools.shopify._exception_prompt import ShopifyExceptionPrompt
+import inspect
 logger = logging.getLogger(__name__)
 
 description = "Get the product image url of a product."
@@ -24,21 +25,19 @@ outputs = [
     ShopifyOutputs.PRODUCTS_DETAILS,
     *PAGEINFO_OUTPUTS
 ]
-PRODUCTS_NOT_FOUND = "error: product not found"
-errors = [PRODUCTS_NOT_FOUND]
 
-@register_tool(description, slots, outputs, lambda x: x not in errors, True)
+
+@register_tool(description, slots, outputs, isResponse=True)
 def get_product_images(product_ids: list, **kwargs) -> str:
+    func_name = inspect.currentframe().f_code.co_name
     nav = cursorify(kwargs)
     if not nav[1]:
         return nav[0]
     auth = authorify_admin(kwargs)
-    if auth["error"]:
-        return auth["error"]
 
     try:
         ids = ' OR '.join(f'id:{pid.split("/")[-1]}' for pid in product_ids)
-        with shopify.Session.temp(**auth["value"]):
+        with shopify.Session.temp(**auth):
             response = shopify.GraphQL().execute(f"""
                 {{
                     products ({nav[0]}, query:"{ids}") {{
@@ -92,12 +91,6 @@ def get_product_images(product_ids: list, **kwargs) -> str:
                     "card_list": card_list
                 })
             else:
-                return json.dumps({
-                    "answer": PRODUCTS_NOT_FOUND,
-                    "card_list": []
-                })
+                raise ToolExecutionError(func_name, ShopifyExceptionPrompt.PRODUCTS_NOT_FOUND_PROMPT)
     except Exception as e:
-        return json.dumps({
-                "answer": PRODUCTS_NOT_FOUND,
-                "card_list": []
-            })
+        raise ToolExecutionError(func_name, ShopifyExceptionPrompt.PRODUCTS_NOT_FOUND_PROMPT)

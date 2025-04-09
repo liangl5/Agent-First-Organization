@@ -16,6 +16,7 @@ from arklex.orchestrator.generator.generator import Generator
 from arklex.env.tools.RAG.build_rag import build_rag
 from arklex.env.tools.database.build_database import build_database
 from arklex.utils.model_config import MODEL
+from arklex.utils.model_provider_config import LLM_PROVIDERS, PROVIDER_MAP
 
 logger = init_logger(log_level=logging.INFO, filename=os.path.join(os.path.dirname(__file__), "logs", "arklex.log"))
 load_dotenv()
@@ -25,7 +26,7 @@ load_dotenv()
 # SLOTFILLAPI_ADDR = f"http://localhost:{API_PORT}/slotfill"
 
 def generate_taskgraph(args):
-    model = ChatOpenAI(model=MODEL["model_type_or_path"], timeout=30000)
+    model = PROVIDER_MAP.get(MODEL['llm_provider'], ChatOpenAI)(model=MODEL["model_type_or_path"],timeout=30000)
     generator = Generator(args, args.config, model, args.output_dir)
     taskgraph_filepath = generator.generate()
     # Update the task graph with the API URLs
@@ -69,10 +70,12 @@ if __name__ == "__main__":
     parser.add_argument('--config', type=str, default="./arklex/orchestrator/examples/customer_service_config.json")
     parser.add_argument('--output-dir', type=str, default="./examples/test")
     parser.add_argument('--model', type=str, default=MODEL["model_type_or_path"])
+    parser.add_argument( '--llm-provider',type=str,default=MODEL["llm_provider"],choices=LLM_PROVIDERS)
     parser.add_argument('--log-level', type=str, default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
     parser.add_argument('--task', type=str, choices=["gen_taskgraph", "init", "all"], default="all")
     args = parser.parse_args()
     MODEL["model_type_or_path"] = args.model
+    MODEL["llm_provider"] = args.llm_provider
     log_level = getattr(logging, args.log_level.upper(), logging.INFO)
     logger = init_logger(log_level=log_level, filename=os.path.join(os.path.dirname(__file__), "logs", "arklex.log"))
 

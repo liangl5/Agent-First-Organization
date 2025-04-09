@@ -12,6 +12,10 @@ from arklex.env.tools.shopify.utils import authorify_admin
 from arklex.env.tools.shopify.utils_slots import ShopifyGetWebProductSlots, ShopifyOutputs
 from arklex.env.tools.tools import register_tool
 
+from arklex.exceptions import ToolExecutionError
+from arklex.env.tools.shopify._exception_prompt import ShopifyExceptionPrompt
+import inspect
+
 logger = logging.getLogger(__name__)
 
 description = "Get the inventory information and description details of a product."
@@ -20,20 +24,18 @@ outputs = [
     ShopifyOutputs.PRODUCTS_DETAILS,
     *PAGEINFO_OUTPUTS
 ]
-PRODUCT_NOT_FOUND = "error: product not found"
-errors = [PRODUCT_NOT_FOUND]
 
-@register_tool(description, slots, outputs, lambda x: x not in errors)
+
+@register_tool(description, slots, outputs)
 def get_web_product(web_product_id: str, **kwargs) -> str:
+    func_name = inspect.currentframe().f_code.co_name
     nav = cursorify(kwargs)
     if not nav[1]:
         return nav[0]
     auth = authorify_admin(kwargs)
-    if auth["error"]:
-        return auth["error"]
 
     try:
-        with shopify.Session.temp(**auth["value"]):
+        with shopify.Session.temp(**auth):
             response = shopify.GraphQL().execute(f"""
                 {{
                     products ({nav[0]}, query:"id:{web_product_id.split("/")[-1]}") {{
@@ -71,7 +73,7 @@ def get_web_product(web_product_id: str, **kwargs) -> str:
             result = json.loads(response)['data']['products']
             response = result["nodes"]
             if len(response) == 0:
-                return PRODUCT_NOT_FOUND
+                raise ToolExecutionError(func_name, ExceptionPrompt.PRODUCT_NOT_FOUND_PROMPT)
             product = response[0]
             response_text = ""
             response_text += f"Product ID: {product.get('id', 'None')}\n"
@@ -87,4 +89,4 @@ def get_web_product(web_product_id: str, **kwargs) -> str:
 
             return response_text
     except Exception as e:
-        return PRODUCT_NOT_FOUND
+        raise ToolExecutionError(func_name, ShopifyExceptionPrompt.PRODUCT_NOT_FOUND_PROMPT)

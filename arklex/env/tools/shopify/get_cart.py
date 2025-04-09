@@ -2,7 +2,9 @@ from arklex.env.tools.shopify.utils_slots import ShopifyGetCartSlots, ShopifyOut
 from arklex.env.tools.shopify.utils_cart import *
 from arklex.env.tools.shopify.utils_nav import *
 from arklex.env.tools.tools import register_tool
-
+from arklex.exceptions import ToolExecutionError
+from arklex.env.tools.shopify._exception_prompt import ShopifyExceptionPrompt
+import inspect
 import logging
 
 logger = logging.getLogger(__name__)
@@ -13,17 +15,15 @@ outputs = [
     ShopifyOutputs.GET_CART_DETAILS,
     *PAGEINFO_OUTPUTS
 ]
-CART_NOT_FOUND_ERROR = "error: cart not found"
-errors = [CART_NOT_FOUND_ERROR]
 
-@register_tool(description, slots, outputs, lambda x: x not in errors)
+
+@register_tool(description, slots, outputs)
 def get_cart(cart_id, **kwargs):
+    func_name = inspect.currentframe().f_code.co_name
     nav = cursorify(kwargs)
     if not nav[1]:
         return nav[0]
     auth = authorify_storefront(kwargs)
-    if auth["error"]:
-        return auth["error"]
 
     variable = {
         "id": cart_id,
@@ -66,7 +66,7 @@ def get_cart(cart_id, **kwargs):
         response = response.json()
         cart_data = response["data"]["cart"]
         if not cart_data:
-            return CART_NOT_FOUND_ERROR
+            raise ToolExecutionError(func_name, ShopifyExceptionPrompt.CART_NOT_FOUND_ERROR_PROMPT)
         response_text = ""
         response_text += f"Checkout URL: {cart_data['checkoutUrl']}\n"
         lines = cart_data['lines']
@@ -77,5 +77,4 @@ def get_cart(cart_id, **kwargs):
                 response_text += f"Product Title: {product['title']}\n"
         return response_text
     else:
-        logger.error(f"Error: {response.text}")
-        return CART_NOT_FOUND_ERROR
+        raise ToolExecutionError(func_name, ShopifyExceptionPrompt.CART_NOT_FOUND_ERROR_PROMPT)

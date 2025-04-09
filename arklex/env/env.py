@@ -14,7 +14,6 @@ from arklex.orchestrator.NLU.nlu import SlotFilling
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_WORKER  = {"id": "default_worker", "name": "DefaultWorker", "path": "default_worker.py"}
 
 class BaseResourceInitializer:
     @staticmethod

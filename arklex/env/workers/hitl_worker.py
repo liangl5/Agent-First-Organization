@@ -117,7 +117,7 @@ class HITLWorker(BaseWorker):
             : 
         """
         state.message_flow = "The user don't need human help"
-        state.status = StatusEnum.COMPLETE.value
+        state.status = StatusEnum.COMPLETE
         return state
             
     def _create_action_graph(self):
@@ -236,12 +236,12 @@ class HITLWorkerChatFlag(HITLWorker):
             
             state.message_flow = message
             state.metadata.hitl = 'live'
-            state.status = StatusEnum.STAY.value
+            state.status = StatusEnum.STAY
         
         else:
             state.message_flow = 'Live chat completed'
             state.metadata.hitl = None
-            state.status = StatusEnum.COMPLETE.value
+            state.status = StatusEnum.COMPLETE
         
         logger.info(state.message_flow)
         return state
@@ -283,7 +283,7 @@ class HITLWorkerMCFlag(HITLWorker):
             state.response = '[[sending confirmation : this should not show up for user]]'
             state.metadata.hitl = 'mc'
             state.metadata.attempts = self.params.get("max_retries", 3)
-            state.status = StatusEnum.STAY.value
+            state.status = StatusEnum.STAY
         
         else:
             result = self.params["choices"].get(state.user_message.message) # not actually user message but system confirmation
@@ -291,18 +291,18 @@ class HITLWorkerMCFlag(HITLWorker):
             if result:
                 state.response = result
                 state.metadata.hitl = None
-                state.status = StatusEnum.COMPLETE.value
+                state.status = StatusEnum.COMPLETE
                 return state
             
             state.metadata.attempts -= 1
             if state.metadata.attempts <= 0:
                 state.response = self.params['default']
                 state.metadata.hitl = None
-                state.status = StatusEnum.INCOMPLETE.value
+                state.status = StatusEnum.INCOMPLETE
                 return state
                     
             state.response = '[[sending confirmation : this should not show up for user]]'
             state.metadata.hitl = 'mc'
-            state.status = StatusEnum.STAY.value
+            state.status = StatusEnum.STAY
             
         return state
