@@ -68,6 +68,8 @@ class AgentOrg:
         return text, chat_history_str, params
 
     def check_skip_node(self, node_info: NodeInfo, params: Params):
+        # NOTE: Do not check the node limit to decide whether the node can be skipped because skipping a node when should not is unwanted.
+        return False
         if not node_info.can_skipped:
             return False
         cur_node_id = params.taskgraph.curr_node

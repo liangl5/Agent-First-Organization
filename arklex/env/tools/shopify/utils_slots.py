@@ -120,10 +120,6 @@ class ShopifyGetOrderDetailsSlots(ShopifySlots):
         }
     )
 
-
-class ShopifyGetProductImagesSlots(ShopifySlots):
-    PRODUCT_IDS = {**ShopifySlots.PRODUCT_IDS, "required": True}
-
 class ShopifyGetProductsSlots(ShopifySlots):
     PRODUCT_IDS = {**ShopifySlots.PRODUCT_IDS, "required": True}
 

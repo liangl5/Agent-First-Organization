@@ -21,7 +21,7 @@ from arklex.env.tools.tools import register_tool
 description = "Removes a items from cart based on line ids"
 slots = [
     ShopifySlots.CART_ID,
-    ShopifySlots.UPDATE_LINE_ITEM,
+    ShopifySlots.UPDATE_LINE_ITEMS,
 ]
 outputs = []
 

@@ -3,47 +3,21 @@ import json
 import argparse
 import time
 import logging
-import subprocess
-import signal
-import atexit
 from dotenv import load_dotenv
 from pprint import pprint
 
-import shopify
-
 from arklex.utils.utils import init_logger
 from arklex.orchestrator.orchestrator import AgentOrg
-# from create import API_PORT
 from arklex.utils.model_config import MODEL
 from arklex.utils.model_provider_config import LLM_PROVIDERS
 from arklex.env.env import Env
 
 load_dotenv()
-# session = shopify.Session(os.environ["SHOPIFY_SHOP_URL"], os.environ["SHOPIFY_API_VERSION"], os.environ["SHOPIFY_ACCESS_TOKEN"])
-# shopify.ShopifyResource.activate_session(session)
-
-process = None  # Global reference for the FastAPI subprocess
 
 def pprint_with_color(data, color_code="\033[34m"):  # Default to blue
     print(color_code, end="")  # Set the color
     pprint(data)
     print("\033[0m", end="")  
-
-def terminate_subprocess():
-    """Terminate the FastAPI subprocess."""
-    global process
-    if process and process.poll() is None:  # Check if process is running
-        logger.info(f"Terminating FastAPI process with PID: {process.pid}")
-        process.terminate()  # Send SIGTERM
-        process.wait()  # Ensure it stops
-        logger.info("FastAPI process terminated.")
-
-# Register cleanup function to run on program exit
-atexit.register(terminate_subprocess)
-
-# Handle signals (e.g., Ctrl+C)
-signal.signal(signal.SIGINT, lambda signum, frame: exit(0))
-signal.signal(signal.SIGTERM, lambda signum, frame: exit(0))
 
 
 def get_api_bot_response(args, history, user_text, parameters, env):
@@ -54,6 +28,7 @@ def get_api_bot_response(args, history, user_text, parameters, env):
     return result['answer'], result['parameters'], result['human_in_the_loop']
 
 
+<<<<<<< HEAD
 def start_apis():
     """Start the FastAPI subprocess and update task graph API URLs."""
     global process
@@ -108,6 +83,8 @@ def start_premodel_questionaire(path):
             raise e
         
 
+=======
+>>>>>>> upstream/main
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--input-dir', type=str, default="./examples/test")
@@ -122,12 +99,15 @@ if __name__ == "__main__":
     log_level = getattr(logging, args.log_level.upper(), logging.WARNING)
     logger = init_logger(log_level=log_level, filename=os.path.join(os.path.dirname(__file__), "logs", "arklex.log"))
 
+<<<<<<< HEAD
     # load premodel questionaire
     start_premodel_questionaire(args.premodel_questionaire)
 
     # Initialize NLU and Slotfill APIs
     # start_apis()
 
+=======
+>>>>>>> upstream/main
     # Initialize env
     config = json.load(open(os.path.join(args.input_dir, "taskgraph.json")))
     env = Env(
@@ -146,16 +126,14 @@ if __name__ == "__main__":
             break
     history.append({"role": worker_prefix, "content": start_message})
     pprint_with_color(f"Bot: {start_message}")
-    try:
-        while True:
-            user_text = input("You: ")
-            if user_text.lower() == "quit":
-                break
-            start_time = time.time()
-            output, params, hitl = get_api_bot_response(args, history, user_text, params, env)
-            history.append({"role": user_prefix, "content": user_text})
-            history.append({"role": worker_prefix, "content": output})
-            print(f"getAPIBotResponse Time: {time.time() - start_time}")
-            pprint_with_color(f"Bot: {output}")
-    finally:
-        terminate_subprocess()  # Ensure the subprocess is terminated
+    
+    while True:
+        user_text = input("You: ")
+        if user_text.lower() == "quit":
+            break
+        start_time = time.time()
+        output, params, hitl = get_api_bot_response(args, history, user_text, params, env)
+        history.append({"role": user_prefix, "content": user_text})
+        history.append({"role": worker_prefix, "content": output})
+        print(f"getAPIBotResponse Time: {time.time() - start_time}")
+        pprint_with_color(f"Bot: {output}")

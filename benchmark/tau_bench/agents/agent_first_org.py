@@ -10,14 +10,14 @@ from arklex.env.env import Env
 
 # from benchmark.tau_bench.envs.base import Env
 from benchmark.tau_bench.agents.base import Agent
-from benchmark.tau_bench.types import SolveResult, Action, RESPOND_ACTION_NAME
+from benchmark.tau_bench.tau_types import SolveResult, Action, RESPOND_ACTION_NAME
 
 
 class AgentFirstOrg(Agent):
     def __init__(self, taskgraph_dir: str):
         self.taskgraph_dir = taskgraph_dir
         self.taskgraph_path = os.path.join(self.taskgraph_dir, "taskgraph.json")
-        from tau_bench_eval import TauBenchResourceInitializer
+        from benchmark.tau_bench.tau_bench_eval import TauBenchResourceInitializer
         with open(self.taskgraph_path) as taskgraph:
             taskgraph = json.load(taskgraph)
             tau_bench_resource_initializer = TauBenchResourceInitializer()
@@ -64,11 +64,19 @@ class AgentFirstOrg(Agent):
 
             user_message = {"role": "user", "content": user_text}
             assistant_message = {"role": "assistant", "content": output}
+            assistant_message_metadata = {"role": "assistant", "content": output, 
+                                 'curr_node': deepcopy(params["taskgraph"]["curr_node"]),
+                                 'intent': deepcopy(params["taskgraph"]["intent"]),
+                                 'metadata': deepcopy(params["memory"]["trajectory"][-1])}
             history.append(user_message)
             history.append(assistant_message)
 
-            while message_index < len(params["history"]):
-                msg = params["history"][message_index]
+            print("=============trajectory============")
+            trajectory = params["memory"]["function_calling_trajectory"]
+            print(trajectory)
+
+            while message_index < len(trajectory):
+                msg = trajectory[message_index]
                 
                 if not is_message_worker(msg):
 
@@ -86,7 +94,7 @@ class AgentFirstOrg(Agent):
                 message_index += 1
             
             # total_cost += res._hidden_params["response_cost"]
-            new_messages.append(assistant_message)
+            new_messages.append(assistant_message_metadata)
             action = message_to_action(assistant_message)
             env_response = env.step(action)
             reward = env_response.reward

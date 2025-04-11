@@ -65,7 +65,7 @@ class FunctionCallingPlanner:
         messages.extend(msg_history)
 
         for _ in range(max_num_steps):
-            logger.info(f"messages in function calling: {messages}")
+            logger.info(f"messages in function calling: {json.dumps(messages)}")
             logger.info(f"tools_info in function calling: {self.tools_info}")
             litellm.modify_params = True
             if not self.tools_info:

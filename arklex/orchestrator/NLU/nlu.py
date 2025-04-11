@@ -70,13 +70,14 @@ class SlotFilling:
 
         return verification_needed, thought
 
-    def execute(self, slots:list[Slot], chat_history_str:str) -> list[Slot]:
+    def execute(self, slots:list[Slot], context:str, type: str = "chat") -> list[Slot]:
         logger.info(f"extracted slots: {slots}")
         if not slots: return []
         
         data = {
             "slots": slots,
-            "chat_history_str": chat_history_str
+            "input": context,
+            "type": type
         }
         if self.url:
             logger.info(f"Using Slot Filling API to predict the slots")

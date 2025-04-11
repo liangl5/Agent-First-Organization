@@ -44,6 +44,7 @@ def search_products(product_query: str, **kwargs) -> str:
                             id
                             title
                             description
+                            handle
                             onlineStoreUrl
                             images(first: 1) {{
                                 edges {{
@@ -78,7 +79,7 @@ def search_products(product_query: str, **kwargs) -> str:
                     "id": product.get('id'),
                     "title": product.get('title'),
                     "description": product.get('description', "None")[:180] + "...",
-                    "link_url": product.get('onlineStoreUrl'),
+                    "link_url": product.get('onlineStoreUrl') if product.get('onlineStoreUrl') else f"{auth['domain']}/products/{product.get('handle')}",
                     "image_url": product.get('images', {}).get('edges', [{}])[0].get('node', {}).get('src', ""), 
                     "variants": product.get('variants', {}).get('nodes', [])
                 }

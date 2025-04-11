@@ -139,9 +139,12 @@ class SlotFillModelAPI():
         self.assistant_prefix = "assistant"
     
     # System prompt for slot filling
-    def format_input(self, input_slots: SlotInputList, chat_history_str) -> str:
+    def format_input(self, slots: SlotInputList, input, type: str = "chat") -> str:
         """Format input text before feeding it to the model."""
-        system_prompt = f"Given the conversation and definition of each dialog state, update the value of following dialogue states.\nDialogue Statues:\n{input_slots}\nConversation:\n{chat_history_str}\n\n"
+        if type == "chat":
+            system_prompt = f"Given the conversation and definition of each dialog state, update the value of following dialogue states.\nDialogue Statues:\n{slots}\nConversation:\n{input}\n\n"
+        elif type == "user_simulator":
+            system_prompt = f"Given a user profile, extract the values for each defined slot type. Only extract values that are explicitly mentioned in the profile. If a value is not found, leave it empty.\n\nSlot definitions:\n{slots}\n\nUser profile:\n{input}\n\nFor each slot:\n1. Look for an exact match in the profile\n2. Only extract values that are clearly stated\n3. Do not make assumptions or infer values\n4. If a slot has enum values, the extracted value must match one of them exactly\n\nExtract the values:\n"
         return system_prompt
 
     # get response from model
@@ -181,10 +184,11 @@ class SlotFillModelAPI():
     def predict(
         self,
         slots: list[Slot],
-        chat_history_str: str,
+        input: str,
+        type: str = "chat"
     ):
         input_slots, output_slots = structured_input_output(slots)
-        system_prompt = self.format_input(input_slots, chat_history_str)
+        system_prompt = self.format_input(input_slots, input, type)
         response = self.get_response(system_prompt, output_slots, note="slot filling")
         filled_slots = format_slotfilling_output(slots, response)
         logger.info(f"Updated dialogue states: {filled_slots}")

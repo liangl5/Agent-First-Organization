@@ -77,6 +77,7 @@ class Tool:
             "name": "default_slots",
             "content": json.dumps(response)
         })
+        
         logger.info(f'Slots after initialization are: {self.slots}')
         
     def _execute(self, state: MessageState, **fixed_args):
