@@ -24,12 +24,12 @@ def evaluate(config):
         first_pass_data, goals = simulate_conversations(model_api, model_params, synthetic_data_params, config)
         goal_metrics = extract_task_completion_metrics(first_pass_data, bot_goal)
         data = first_pass_data
-    elif task == 'action_pass':
-        # action pass
-        action_pass_data, goals, labels_list = simulate_action_conversations(model_api, model_params, synthetic_data_params, config)
-        goal_metrics = extract_task_completion_metrics(action_pass_data, bot_goal)
-        goal_metrics['action_pass'] = analyze_action_accuracy_metrics(action_pass_data, labels_list)
-        data = action_pass_data
+    # elif task == 'action_pass':
+    #     # action pass
+    #     action_pass_data, goals, labels_list = simulate_action_conversations(model_api, model_params, synthetic_data_params, config)
+    #     goal_metrics = extract_task_completion_metrics(action_pass_data, bot_goal)
+    #     goal_metrics['action_pass'] = analyze_action_accuracy_metrics(action_pass_data, labels_list)
+    #     data = action_pass_data
     # second pass
     if task == 'all':
         labeled_convos = get_labeled_convos(first_pass_data, model_api, synthetic_data_params, model_params, config)

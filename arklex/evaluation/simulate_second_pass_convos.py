@@ -24,8 +24,8 @@ def get_paths(G, num_paths, max_turns):
 
 def interact(intent_path, summary, model_api, model_params):
     history = []
-    instructional_prompt = 'Replicate the behavior of a human customer. You are interacting with customer service chatbot for the following company: ' + summary
-    start_text = "Begin the conversation as a human customer with the following intent: " + intent_path[0]
+    instructional_prompt = 'Replicate the behavior of a human user. You are interacting with a valorant coach bot'
+    start_text = "Begin the conversation as a human user with the following intent: " + intent_path[0]
     history.append({'role': 'system','content': instructional_prompt})
     history.append({'role': 'user', 'content': start_text})
     for i in range(len(intent_path)):

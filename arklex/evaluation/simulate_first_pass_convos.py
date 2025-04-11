@@ -8,7 +8,7 @@ from arklex.evaluation.chatgpt_utils import (chatgpt_chatbot, query_chatbot, fil
 from arklex.env.tools.tools import Tool
 
 # USER_DATA_KEYS = ['goal', 'product_experience_level', 'deal_stage', 'customer_type', 'decision_making_authority', 'persona', 'discovery_type', 'buying_behavior']
-USER_DATA_KEYS = ['goal', 'product_experience_level', 'customer_type', 'persona', 'discovery_type', 'buying_behavior']
+USER_DATA_KEYS = ['goal', 'player_experience', 'persona', 'main_role', 'motivation']
 
 def get_relevant_vals(attr):
     vals = []
@@ -71,17 +71,17 @@ def get_example_convo(attr, synthetic_data_params, summary):
 
 def retrieve_prompts(profile, goal, attr, summary, synthetic_data_params):
     if synthetic_data_params['data_file'] is None:
-        instructional_prompt = f'Pretend you are a human interacting with a customer service chatbot for the following company: {summary}\nYou have the following goal when interacting with this chatbot:\n{goal}\nHere is a description of the customer you are pretending to be:\n{profile}\nHave a conversation with the chatbot while trying to achieve your goal as this customer. Make sure the conversation is natural. For example, if the chatbot asks you a question you should answer it.'
-        start_text = "Humans write short questions with occasional typos. Here are some examples of what a human customer would type: [how much is it?, Can you send info to my email, yes I need a job, want to check both proposals to rent and buy, How much does it cost a [PRODUCT_HERE], Im interested in [PRODUCT_HERE], hi i would like to rent out [PRODUCT_HERE] but im wondering which countries are available for rental]. Replicate the writing behavior of a human customer and begin the conversation with a question to achieve your goal."
+        instructional_prompt = f'Pretend you are a human interacting with a valorant coach bot\nYou have the following goal when interacting with this chatbot:\n{goal}\nHere is a description of the customer you are pretending to be:\n{profile}\nHave a conversation with the chatbot while trying to achieve your goal as this customer. Make sure the conversation is natural. For example, if the chatbot asks you a question you should answer it.'
+        start_text = "Humans write short questions with occasional typos. Here are some examples of what a human customer would type: [how do I play brimstone more effectively, when should I lurk, how do I increasse my accuracy, wher e can i find more resources to lean], hi i would like to rent out [PRODUCT_HERE] but im wondering which countries are available for rental]. Replicate the writing behavior of a human customer and begin the conversation with a question to achieve your goal."
     else:
         example_convo, matching_profile = get_example_convo(attr, synthetic_data_params, summary)
-        instructional_prompt = f'Pretend you are a human interacting with a customer service chatbot for the following company: {summary}\nYou have the following goal when interacting with this chatbot:\n{goal}\nHere is a description of the customer you are pretending to be:\n{profile}\nHave a conversation with the chatbot while trying to achieve your goal as this customer. Make sure the conversation is natural. For example, if the chatbot asks you a question you should answer it. Below is an example conversation between a user with a similar profile to yours that you can use a guide. However, keep in mind that the users profile may not be the exact same as yours, so take that into consideration when conducting the conversation. Here is the sample users profile:\n{matching_profile}\nAnd here is the conversation between this user and the chatbot:\n{example_convo}'
-        start_text = "Replicate the writing behavior of a human customer and begin the conversation with a question to achieve your goal."
+        instructional_prompt = f'Pretend you are a human interacting with a valorant coach bot\nYou have the following goal when interacting with this chatbot:\n{goal}\nHere is a description of the customer you are pretending to be:\n{profile}\nHave a conversation with the chatbot while trying to achieve your goal as this customer. Make sure the conversation is natural. For example, if the chatbot asks you a question you should answer it. Below is an example conversation between a user with a similar profile to yours that you can use a guide. However, keep in mind that the users profile may not be the exact same as yours, so take that into consideration when conducting the conversation. Here is the sample users profile:\n{matching_profile}\nAnd here is the conversation between this user and the chatbot:\n{example_convo}'
+        start_text = "Replicate the writing behavior of a human user and begin the conversation with a question to achieve your goal."
     return instructional_prompt, start_text
 
 def check_goal_completion(goal, convo):
     convo_str = format_chat_history_str(flip_hist_content_only(convo[2:]))
-    prompt = f"Here is a conversation between a user and a customer service chatbot assistant:\n{convo_str}\n\nThe user's goal is the following: {goal}\nOutput False if the user needs to learn more information regarding their goal. Output True otherwise. Only onput True or False and nothing else."
+    prompt = f"Here is a conversation between a user and a valorant coach bot:\n{convo_str}\n\nThe user's goal is the following: {goal}\nOutput False if the user needs to learn more information regarding their goal. Output True otherwise. Only onput True or False and nothing else."
     output = chatgpt_chatbot([{'role': 'user', 'content': prompt}])
     return output == "True"
 

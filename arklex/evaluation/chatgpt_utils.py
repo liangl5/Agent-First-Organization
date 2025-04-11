@@ -34,7 +34,7 @@ def flip_hist_content_only(hist):
         if turn['role'] == 'system':
             continue
         elif turn['role'] == 'user':
-            new_hist.append({'role': 'assistant', 'content': turn['content']})
+            new_hist.append({'role': 'coach', 'content': turn['content']})
         else:
             new_hist.append({'role': 'user', 'content': turn['content']})
     return new_hist
@@ -48,7 +48,7 @@ def flip_hist(hist):
         elif turn['role'] == 'system':
             continue
         elif turn['role'] == 'user':
-            turn['role'] = 'assistant'
+            turn['role'] = 'coach'
             new_hist.append(turn)
         else:
             turn['role'] = 'user'
@@ -97,7 +97,7 @@ def filter_convo(convo, delim = '\n', filter_turns = True):
     return filtered_convo
 
 def adjust_goal(doc_content, goal):
-    message = f"Pretend you have the following goal in the mind. If the goal including some specific product, such as floss, mug, iphone, etc., then please replace it with the product from the following document content. Otherwise, don't need to change it and just return the original goal. The document content is as follows:\n{doc_content}\n\nThe original goal is as follows:\n{goal}\n\nOnly give the answer to the question in your response."
+    message = f"Pretend you have the following goal in the mind. If the goal including some specific agent or map, such as brimstone, cypher, split, haven, etc., then please replace it with the agent or map from the following document content. Otherwise, don't need to change it and just return the original goal. The document content is as follows:\n{doc_content}\n\nThe original goal is as follows:\n{goal}\n\nOnly give the answer to the question in your response."
 
     return chatgpt_chatbot([{'role': 'user', 'content': message}], model=MODEL["model_type_or_path"])
 

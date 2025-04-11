@@ -1,85 +1,31 @@
 {
     "generic": {
         "goal": {
-            "values": ["order tracking", "asking for refund", "report order missing", "report product issue", "asking replacement", "request repair", "interested in product information", "product purchase", "product rental"],
+            "values": ["learning new map strategies", "learning how to communicate and what to communicate to teammates", "learning how to play a specific agent", "learning how to manage economy", "find tips and resources to getting better aim", "becoming more consistent", "learning various game states", "learning how to take duels"],
             "generate_values": false
         },
-        "product_experience_level": {
-            "values": ["new to this product", "used competitor product"],
-            "generate_values": false
-        },
-        "customer_type": {
-            "values": ["new prospect", "returning customer"],
+        "player_experience": {
+            "values": ["new to FPS genre", "played FPS games before", "played valorant", "played a lot of valorant"],
             "generate_values": false
         },
         "persona": {
-            "values": ["aggressive", "passive", "neutral"],
+            "values": ["casual", "neutral", "competitive", "professional"],
             "generate_values": false
         },
-        "current_webpage": {
-            "values": ["home page", "product page", "about page"],
+        "main_role": {
+            "values": ["controller", "duelist", "sentinel", "initiator"],
             "generate_values": false
         },
-        "modality": {
-            "values": ["text"],
+        "motivation": {
+            "values": ["get better", "get better aim", "achieve a higher rank", "climb to the highest rank", "become a professional"],
             "generate_values": false
-        },
-        "communication_type": {
-            "values": ["outgoing", "incoming"],
-            "generate_values": false
-        },
-        "discovery_type": {
-            "values": ["social media", "friend recommendation", "search engine results", "third party website"],
-            "generate_values": false
-        },
-        "buying_behavior": {
-            "values": ["economic", "quality oriented"],
-            "generate_values": false
-        },
-        "budget": {
-            "values": [],
-            "generate_values": true
-        },
-        "purchase_history": {
-            "values": [],
-            "generate_values": true
-        },
-        "location": {
-            "values": [],
-            "generate_values": true
         }
     },
     "b2b": {
-        "decision_making_authority": {
-            "values": ["primary", "secondary"],
-            "generate_values": false
-        },
-        "deal_stage": {
-            "values": ["new leads", "demo schedule", "after demo", "decision make buy in", "contract sent", "contract signed", "money paid"],
-            "generate_values": false
-        },
-        "job_information": {
-            "values": [],
-            "generate_values": true
-        },
-        "business_type": {
-            "values": [],
-            "generate_values": true
-        },
-        "company_size": {
-            "values": [],
-            "generate_values": true
-        }
+
     },
     "b2c": {
-        "brand_behavior": {
-            "values": ["brand loyal", "brand indifferent"],
-            "generate_values": false
-        },
-        "purchasing_preference": {
-            "values": ["discount oriented", "economic", "quality oriented"],
-            "generate_values": false
-        }
+
     },
     "system_attributes": {
         "user_id": {

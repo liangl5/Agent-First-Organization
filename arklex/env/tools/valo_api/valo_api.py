@@ -25,6 +25,8 @@ class APIEngine():
     @staticmethod
     def api_retrieve(state: MessageState):
 
+        
+        #response = requests.get("https://api.henrikdev.xyz/valorant/v3/matches/na/monkeyman101/monke", # Use this one for eval as not sure how to make prequestionaire work
         response = requests.get("https://api.henrikdev.xyz/valorant/v3/matches/"+ os.getenv("VALO_REGION") + "/" + os.getenv("VALO_USERNAME").replace("#", "/"),
             headers={
                 "Authorization": os.getenv("VALO_API_KEY"),

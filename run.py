@@ -27,30 +27,6 @@ def get_api_bot_response(args, history, user_text, parameters, env):
 
     return result['answer'], result['parameters'], result['human_in_the_loop']
 
-
-<<<<<<< HEAD
-def start_apis():
-    """Start the FastAPI subprocess and update task graph API URLs."""
-    global process
-    command = [
-        "uvicorn",
-        "arklex.orchestrator.NLU.api:app",  # Replace with proper import path
-        "--port", API_PORT,
-        "--host", "0.0.0.0",
-        "--log-level", "info"
-    ]
-
-    # Redirect FastAPI logs to a file
-    with open("./logs/api.log", "w") as log_file:
-        process = subprocess.Popen(
-            command,
-            stdout=log_file,  # Redirect stdout to a log file
-            stderr=subprocess.STDOUT,  # Redirect stderr to the same file
-            start_new_session=True  # Run in a separate process group
-        )
-    logger.info(f"Started FastAPI process with PID: {process.pid}")
-
-
 def start_premodel_questionaire(path):
     type_map = {
         "int": int,
@@ -83,8 +59,6 @@ def start_premodel_questionaire(path):
             raise e
         
 
-=======
->>>>>>> upstream/main
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--input-dir', type=str, default="./examples/test")
@@ -99,16 +73,10 @@ if __name__ == "__main__":
     log_level = getattr(logging, args.log_level.upper(), logging.WARNING)
     logger = init_logger(log_level=log_level, filename=os.path.join(os.path.dirname(__file__), "logs", "arklex.log"))
 
-<<<<<<< HEAD
     # load premodel questionaire
+    # doesn't currently work with evaulation, need to turn off and insert your own data
     start_premodel_questionaire(args.premodel_questionaire)
 
-    # Initialize NLU and Slotfill APIs
-    # start_apis()
-
-=======
->>>>>>> upstream/main
-    # Initialize env
     config = json.load(open(os.path.join(args.input_dir, "taskgraph.json")))
     env = Env(
         tools = config.get("tools", []),

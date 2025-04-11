@@ -1,0 +1,37 @@
+[
+    {
+        "goal": "find tips and resources to getting better aim",
+        "player_experience": "played a lot of valorant",
+        "persona": "competitive",
+        "main_role": "sentinel",
+        "motivation": "get better"
+    },
+    {
+        "goal": "find tips and resources to getting better aim",
+        "player_experience": "new to FPS genre",
+        "persona": "professional",
+        "main_role": "duelist",
+        "motivation": "climb to the highest rank"
+    },
+    {
+        "goal": "learning how to take duels",
+        "player_experience": "played a lot of valorant",
+        "persona": "neutral",
+        "main_role": "sentinel",
+        "motivation": "achieve a higher rank"
+    },
+    {
+        "goal": "learning new map strategies",
+        "player_experience": "played FPS games before",
+        "persona": "casual",
+        "main_role": "controller",
+        "motivation": "become a professional"
+    },
+    {
+        "goal": "learning how to communicate and what to communicate to teammates",
+        "player_experience": "played valorant",
+        "persona": "competitive",
+        "main_role": "controller",
+        "motivation": "get better"
+    }
+]
