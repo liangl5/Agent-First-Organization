@@ -1,0 +1,786 @@
+{
+    "nodes": [
+        [
+            "0",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Hello, and welcome to your Valorant Coach! I'm here to help you improve your game by providing strategies, feedback, and tips. Whether you need advice on a specific situation, want insights into your match history, or are looking for general improvement strategies, I'm here to assist. How can we enhance your gameplay today?",
+                    "task": "start message",
+                    "directed": false
+                },
+                "limit": 1,
+                "type": "start"
+            }
+        ],
+        [
+            "1",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Hello! Are there any specific aspects of Valorant you are interested in, like strategies, tips, or game mechanics?",
+                    "task": "Greet the user and inquire about the specific Valorant aspects they are interested in, such as strategies, tips, or game mechanics.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "2",
+            {
+                "resource": {
+                    "id": "9aa47724-0b77-4752-9528-cf4b06a46915",
+                    "name": "FaissRAGWorker"
+                },
+                "attribute": {
+                    "value": "",
+                    "task": "If the user has specific questions or seeks general insights, use FaissRAGWorker to retrieve insights and tips from company documentation.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "3",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Would you like personalized feedback based on your match history?",
+                    "task": "Ask the user if they would like personalized feedback based on their match history.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "4",
+            {
+                "resource": {
+                    "id": "0b2c3d4e-5f67-89a1-bc23-d456e7890fab",
+                    "name": "ValoAPI"
+                },
+                "attribute": {
+                    "value": "",
+                    "task": "If the user wants personalized feedback, use ValoAPI to access the user's match history and generate insights and coaching tips.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "5",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Here are some insights and tips based on your inquiry. If you have more questions, feel free to ask!",
+                    "task": "Provide the user with the requested information or insights along with actionable tips or strategies.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "6",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Feel free to ask any follow-up questions or if you need further guidance on specific subjects!",
+                    "task": "Encourage the user to ask follow-up questions or request further guidance on specific subjects if needed.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "7",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Could you describe the in-game scenarios or challenges you're facing and need strategic advice on?",
+                    "task": "Ask the user for specific in-game scenarios or challenges they want strategic advice on using the MessageWorker.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "8",
+            {
+                "resource": {
+                    "id": "9aa47724-0b77-4752-9528-cf4b06a46915",
+                    "name": "FaissRAGWorker"
+                },
+                "attribute": {
+                    "value": "",
+                    "task": "Depending on the user's request, use the FaissRAGWorker to pull any documented strategies or tips related to the specified scenarios from internal documentation.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "9",
+            {
+                "resource": {
+                    "id": "0b2c3d4e-5f67-89a1-bc23-d456e7890fab",
+                    "name": "ValoAPI"
+                },
+                "attribute": {
+                    "value": "",
+                    "task": "If the user provides a specific match scenario, use ValoAPI to extract relevant data from their match history and provide customized insights and feedback.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "10",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Based on your match history and the scenario you described, here are some strategic tips and tactics you can use...",
+                    "task": "With the collected information, use the MessageWorker to provide tailored strategic advice and tactics for the user's scenario.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "11",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Do you need further clarification on the advice provided, or is there another scenario you'd like to get advice on?",
+                    "task": "Ask the user if they need further clarification or have additional scenarios they want advice on, using the MessageWorker.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "12",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Let's tackle your next scenario! Could you provide more details so I can assist you better?",
+                    "task": "If needed, repeat steps 2-5 for any other scenarios or challenges the user wants to explore.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "13",
+            {
+                "resource": {
+                    "id": "0b2c3d4e-5f67-89a1-bc23-d456e7890fab",
+                    "name": "ValoAPI"
+                },
+                "attribute": {
+                    "value": "Based on your latest matches, here are some areas for improvement: focus on increasing your headshot percentage and managing your in-game economy more efficiently.",
+                    "task": "Analyze match history to provide personalized feedback and improvement areas",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "14",
+            {
+                "resource": {
+                    "id": "0b2c3d4e-5f67-89a1-bc23-d456e7890fab",
+                    "name": "ValoAPI"
+                },
+                "attribute": {
+                    "value": "Here are your recent match statistics: 15 kills, 10 deaths, 1500 score, with a 40% headshot percentage.",
+                    "task": "Use ValoAPI to retrieve the user's match history and performance statistics including kills, deaths, score, and headshot percentage.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "15",
+            {
+                "resource": {
+                    "id": "0b2c3d4e-5f67-89a1-bc23-d456e7890fab",
+                    "name": "ValoAPI"
+                },
+                "attribute": {
+                    "value": "Your headshot accuracy is impressive, but there's room for improvement in positioning to reduce deaths.",
+                    "task": "Analyze the retrieved statistics to identify key areas for improvement or strengths to leverage.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "16",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Based on your stats, you're doing great with headshots! Work on reducing your deaths by improving your positioning.",
+                    "task": "Deliver initial insights about strengths and improvement areas to the user using MessageWorker.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "17",
+            {
+                "resource": {
+                    "id": "9aa47724-0b77-4752-9528-cf4b06a46915",
+                    "name": "FaissRAGWorker"
+                },
+                "attribute": {
+                    "value": "I've found a set of exercises to improve your positioning and situational awareness in matches.",
+                    "task": "Use FaissRAGWorker to search the company's internal documentation for relevant exercises and tips that address the identified improvement areas.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "18",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Try these exercises to improve positioning: 'Scenario Simulation' and 'Cover Utilization Drills'.",
+                    "task": "Provide specific coaching tips and exercises to the user via MessageWorker.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "19",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Do you need more tips on other areas or have any questions about your performance?",
+                    "task": "Ask if the user wants additional tips or has specific questions about their performance.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "20",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Let me know if you want more detailed tips or we can wrap up the session here. I'm happy to assist!",
+                    "task": "Based on the user's response, either provide more detailed tips using the available resources or conclude the session.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "21",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Which agent would you like advice on? Do you have any specific questions or areas you'd like to focus on?",
+                    "task": "Inquire about the specific agent the user wants advice on and any specific areas or questions they have regarding the agent.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "22",
+            {
+                "resource": {
+                    "id": "0b2c3d4e-5f67-89a1-bc23-d456e7890fab",
+                    "name": "ValoAPI"
+                },
+                "attribute": {
+                    "value": "Based on your recent matches, here are some insights into your performance with this agent.",
+                    "task": "Utilize ValoAPI to access the user's match history and gather relevant statistics and insights on their performance and usage of the specified agent.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "23",
+            {
+                "resource": {
+                    "id": "9aa47724-0b77-4752-9528-cf4b06a46915",
+                    "name": "FaissRAGWorker"
+                },
+                "attribute": {
+                    "value": "Here are some strategies and insights from our documentation that might help you improve with this agent.",
+                    "task": "Leverage FaissRAGWorker to provide insights and strategies from internal documentations based on the user's questions and agent selection.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "24",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Combining performance data and expert strategies, here's your personalized coaching advice.",
+                    "task": "Combine insights from ValoAPI and FaissRAGWorker to deliver personalized coaching advice and best strategies for using the specified agent.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ],
+        [
+            "25",
+            {
+                "resource": {
+                    "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+                    "name": "MessageWorker"
+                },
+                "attribute": {
+                    "value": "Do you need any more assistance or have any other questions or scenarios you want advice on?",
+                    "task": "Ask the user if they need further assistance or have any more specific questions or scenarios they would like advice on.",
+                    "directed": false
+                },
+                "limit": 1
+            }
+        ]
+    ],
+    "edges": [
+        [
+            "0",
+            "1",
+            {
+                "intent": "User seeks general game advice or tips",
+                "attribute": {
+                    "weight": 1,
+                    "pred": true,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "1",
+            "2",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "2",
+            "3",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "3",
+            "4",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "4",
+            "5",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "5",
+            "6",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "0",
+            "7",
+            {
+                "intent": "User needs strategy or tactics for a specific situation",
+                "attribute": {
+                    "weight": 1,
+                    "pred": true,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "7",
+            "8",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "8",
+            "9",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "9",
+            "10",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "10",
+            "11",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "11",
+            "12",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "0",
+            "13",
+            {
+                "intent": "User wants feedback based on match history",
+                "attribute": {
+                    "weight": 1,
+                    "pred": true,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "0",
+            "14",
+            {
+                "intent": "User seeks tips for improving individual skills",
+                "attribute": {
+                    "weight": 1,
+                    "pred": true,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "14",
+            "15",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "15",
+            "16",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "16",
+            "17",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "17",
+            "18",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "18",
+            "19",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "19",
+            "20",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "0",
+            "21",
+            {
+                "intent": "User desires information on agent abilities and usage",
+                "attribute": {
+                    "weight": 1,
+                    "pred": true,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "21",
+            "22",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "22",
+            "23",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "23",
+            "24",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ],
+        [
+            "24",
+            "25",
+            {
+                "intent": "None",
+                "attribute": {
+                    "weight": 1,
+                    "pred": false,
+                    "definition": "",
+                    "sample_utterances": []
+                }
+            }
+        ]
+    ],
+    "role": "valorant coach",
+    "user_objective": "The valorant coach helps users with game related questions and provides strategies to getting better. It can provide insights on certain game outcomes or states, feedback on various strategies, strategies for various situations, and overall general coaching tips for improvement. It can also provide customized feedback based on a user's match history",
+    "builder_objective": "The valorant coach ask for user feedback at the end of the conversation.",
+    "domain": "gaming and coaching",
+    "intro": "Valorant offers a competitve 5v5 team-based environment where strategy, communication, and individual skill all blend together. In competitive circuits, players are known for amazing technical skill through precise aim, coordination through strategies, communication, and utility usage, and adaptability to unique high-pressure scenarios.",
+    "task_docs": [
+        {
+            "source": "https://playvalorant.com/en-us/news/announcements/beginners-guide/",
+            "num": 1
+        },
+        {
+            "source": "https://playvalorant.com/en-us/",
+            "num": 20
+        }
+    ],
+    "rag_docs": [
+        {
+            "source": "https://playvalorant.com/en-us/news/announcements/beginners-guide/",
+            "num": 1
+        },
+        {
+            "source": "https://juked.gg/valorant/game-guide/how-valorant-works-an-in-depth-guide-for-new-players/",
+            "num": 1
+        },
+        {
+            "source": "https://www.redbull.com/us-en/valorant-map-strategy-tips",
+            "num": 1
+        },
+        {
+            "source": "https://skycoach.gg/blog/valorant/valorant-guides",
+            "num": 20
+        }
+    ],
+    "tasks": [],
+    "workers": [
+        {
+            "id": "9aa47724-0b77-4752-9528-cf4b06a46915",
+            "name": "FaissRAGWorker",
+            "path": "faiss_rag_worker.py"
+        },
+        {
+            "id": "26bb6634-3bee-417d-ad75-23269ac17bc3",
+            "name": "MessageWorker",
+            "path": "message_worker.py"
+        },
+        {
+            "id": "9c15af81-04b3-443e-be04-a3522124b905",
+            "name": "SearchWorker",
+            "path": "search_worker.py"
+        },
+        {
+            "id": "b06c2b58-12c5-41fe-9838-e93b530e42e8",
+            "name": "DefaultWorker",
+            "path": "default_worker.py"
+        },
+        {
+            "id": "0b2c3d4e-5f67-89a1-bc23-d456e7890fab",
+            "name": "ValoAPI",
+            "path": "valo_api_worker.py"
+        }
+    ],
+    "tools": [],
+    "nluapi": "",
+    "slotfillapi": ""
+}

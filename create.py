@@ -21,7 +21,7 @@ from arklex.utils.model_provider_config import LLM_PROVIDERS, PROVIDER_MAP
 logger = init_logger(log_level=logging.INFO, filename=os.path.join(os.path.dirname(__file__), "logs", "arklex.log"))
 load_dotenv()
 
-# API_PORT = "55135"
+API_PORT = "8000"
 # NLUAPI_ADDR = f"http://localhost:{API_PORT}/nlu"
 # SLOTFILLAPI_ADDR = f"http://localhost:{API_PORT}/slotfill"
 

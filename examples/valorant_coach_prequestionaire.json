@@ -1,0 +1,17 @@
+{
+    "questions": [
+        {
+            "prompt": "What is your full account name (ex. Brimstone#NA1)?: ",
+            "type": "str",
+            "environ_var": "VALO_USERNAME",
+            "restricted": false
+        }, {
+            "prompt": "What region do you play on (eu, na, latam, br, ap, kr)?: ",
+            "type": "str",
+            "environ_var": "VALO_REGION",
+            "restricted": true,
+            "options": ["eu", "na", "latam", "br", "ap", "kr"]
+        }
+
+    ]
+}

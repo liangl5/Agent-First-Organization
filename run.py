@@ -76,6 +76,37 @@ def start_apis():
     logger.info(f"Started FastAPI process with PID: {process.pid}")
 
 
+def start_premodel_questionaire(path):
+    type_map = {
+        "int": int,
+        "str": str,
+        "float": float,
+        "bool": bool
+    }
+
+    if path != "":
+        try:
+            with open(path, 'r') as file:
+                data = json.load(file)
+                
+                for question in data['questions']:
+                    valid_response = False
+                    while not valid_response:
+                        user_input = input(question['prompt'])
+
+                        try:
+                            conv = type_map[question['type']](user_input)
+                            if not question['restricted'] or user_input in question['options']:
+                                valid_response = True 
+                                os.environ[question['environ_var']] = conv
+
+                        except:
+                            valid_response = False
+                            print("Incorrect type given")
+
+        except Exception as e:
+            raise e
+        
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -83,12 +114,16 @@ if __name__ == "__main__":
     parser.add_argument('--model', type=str, default=MODEL["model_type_or_path"])
     parser.add_argument( '--llm-provider',type=str,default=MODEL["llm_provider"],choices=LLM_PROVIDERS)
     parser.add_argument('--log-level', type=str, default="WARNING", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
+    parser.add_argument('--premodel-questionaire', type=str, default="")
     args = parser.parse_args()
     os.environ["DATA_DIR"] = args.input_dir
     MODEL["model_type_or_path"] = args.model
     MODEL["llm_provider"] = args.llm_provider
     log_level = getattr(logging, args.log_level.upper(), logging.WARNING)
     logger = init_logger(log_level=log_level, filename=os.path.join(os.path.dirname(__file__), "logs", "arklex.log"))
+
+    # load premodel questionaire
+    start_premodel_questionaire(args.premodel_questionaire)
 
     # Initialize NLU and Slotfill APIs
     # start_apis()

@@ -8,6 +8,7 @@ from typing import Dict
 import json
 from http import HTTPStatus
 import argparse
+import sys
 
 from arklex.env.env import Env
 import uvicorn
@@ -69,7 +70,7 @@ def start_apis():
     global process
     
     command = [
-        "uvicorn",
+        sys.executable,
         "arklex.orchestrator.NLU.api:app",  # Replace with proper import path
         "--port", API_PORT,
         "--host", "0.0.0.0",

@@ -1,0 +1,36 @@
+{
+    "role": "valorant coach",
+    "user_objective": "The valorant coach helps users with game related questions and provides strategies to getting better. It can provide insights on certain game outcomes or states, feedback on various strategies, strategies for various situations, and overall general coaching tips for improvement. It can also provide customized feedback based on a user's match history",
+    "builder_objective": "The valorant coach ask for user feedback at the end of the conversation.",
+    "domain": "gaming and coaching",
+    "intro": "Valorant offers a competitve 5v5 team-based environment where strategy, communication, and individual skill all blend together. In competitive circuits, players are known for amazing technical skill through precise aim, coordination through strategies, communication, and utility usage, and adaptability to unique high-pressure scenarios.",
+    "task_docs": [{
+        "source": "https://playvalorant.com/en-us/news/announcements/beginners-guide/",
+        "num": 1
+    }, {
+        "source": "https://playvalorant.com/en-us/",
+        "num": 20
+    }],
+    "rag_docs": [{
+        "source": "https://playvalorant.com/en-us/news/announcements/beginners-guide/",
+        "num": 1
+    }, {
+        "source": "https://juked.gg/valorant/game-guide/how-valorant-works-an-in-depth-guide-for-new-players/",
+        "num": 1
+    }, {
+        "source": "https://www.redbull.com/us-en/valorant-map-strategy-tips",
+        "num": 1
+    }, {
+        "source": "https://skycoach.gg/blog/valorant/valorant-guides",
+        "num": 20
+    }],
+    "tasks": [],
+    "workers": [
+        {"id": "9aa47724-0b77-4752-9528-cf4b06a46915", "name": "FaissRAGWorker", "path": "faiss_rag_worker.py"},
+        {"id": "26bb6634-3bee-417d-ad75-23269ac17bc3", "name": "MessageWorker", "path": "message_worker.py"},
+        {"id": "9c15af81-04b3-443e-be04-a3522124b905", "name": "SearchWorker", "path": "search_worker.py"},
+        {"id": "b06c2b58-12c5-41fe-9838-e93b530e42e8", "name": "DefaultWorker", "path": "default_worker.py"},
+        {"id": "0b2c3d4e-5f67-89a1-bc23-d456e7890fab", "name": "ValoAPI", "path": "valo_api_worker.py"}
+    ],
+    "tools": []
+}

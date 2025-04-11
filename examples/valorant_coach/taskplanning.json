@@ -1,0 +1,52 @@
+[
+    {
+        "task_name": "Provide general Valorant game-related insights and tips",
+        "steps": [
+            "Greet the user and inquire about the specific Valorant aspects they are interested in, such as strategies, tips, or game mechanics.",
+            "If the user has specific questions or seeks general insights, use FaissRAGWorker to retrieve insights and tips from company documentation.",
+            "Ask the user if they would like personalized feedback based on their match history.",
+            "If the user wants personalized feedback, use ValoAPI to access the user's match history and generate insights and coaching tips.",
+            "Provide the user with the requested information or insights along with actionable tips or strategies.",
+            "Encourage the user to ask follow-up questions or request further guidance on specific subjects if needed."
+        ]
+    },
+    {
+        "task_name": "Offer strategic advice and tactics for various in-game scenarios",
+        "steps": [
+            "Ask the user for specific in-game scenarios or challenges they want strategic advice on using the MessageWorker.",
+            "Depending on the user's request, use the FaissRAGWorker to pull any documented strategies or tips related to the specified scenarios from internal documentation.",
+            "If the user provides a specific match scenario, use ValoAPI to extract relevant data from their match history and provide customized insights and feedback.",
+            "With the collected information, use the MessageWorker to provide tailored strategic advice and tactics for the user's scenario.",
+            "Ask the user if they need further clarification or have additional scenarios they want advice on, using the MessageWorker.",
+            "If needed, repeat steps 2-5 for any other scenarios or challenges the user wants to explore."
+        ]
+    },
+    {
+        "task_name": "Analyze match history to provide personalized feedback and improvement areas",
+        "steps": [
+            "Analyze match history to provide personalized feedback and improvement areas"
+        ]
+    },
+    {
+        "task_name": "Provide coaching tips and exercises to enhance individual skills",
+        "steps": [
+            "Use ValoAPI to retrieve the user's match history and performance statistics including kills, deaths, score, and headshot percentage.",
+            "Analyze the retrieved statistics to identify key areas for improvement or strengths to leverage.",
+            "Deliver initial insights about strengths and improvement areas to the user using MessageWorker.",
+            "Use FaissRAGWorker to search the company's internal documentation for relevant exercises and tips that address the identified improvement areas.",
+            "Provide specific coaching tips and exercises to the user via MessageWorker.",
+            "Ask if the user wants additional tips or has specific questions about their performance.",
+            "Based on the user's response, either provide more detailed tips using the available resources or conclude the session."
+        ]
+    },
+    {
+        "task_name": "Advise on best practices and strategies for using specific agents",
+        "steps": [
+            "Inquire about the specific agent the user wants advice on and any specific areas or questions they have regarding the agent.",
+            "Utilize ValoAPI to access the user's match history and gather relevant statistics and insights on their performance and usage of the specified agent.",
+            "Leverage FaissRAGWorker to provide insights and strategies from internal documentations based on the user's questions and agent selection.",
+            "Combine insights from ValoAPI and FaissRAGWorker to deliver personalized coaching advice and best strategies for using the specified agent.",
+            "Ask the user if they need further assistance or have any more specific questions or scenarios they would like advice on."
+        ]
+    }
+]
